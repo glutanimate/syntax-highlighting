@@ -99,6 +99,8 @@ def add_code_langs_combobox(self, func, previous_lang):
 ####    options across machines (but not on mobile)
 default_conf = {'linenos': True,  # show numbers by default
                 'centerfragments': True, # Use <center> when generating code fragments
+                'defaultlangperdeck': True, # Default to last used language per deck
+                'deckdefaultlang': {}, # Map to store the default language per deck
                 'lang': 'Python'} # default language is Python 
 ###############################################################
 
@@ -136,6 +138,32 @@ def conf_needs_sync(conf):
 
     return False
 
+def get_deck_name(mw):
+    deck_name = None
+    try:
+        deck_name = mw.col.decks.current()['name']
+    except AttributeError:
+        # No deck opened?
+        deck_name = None
+    return deck_name
+
+def get_default_lang(mw):
+    conf = mw.col.conf['syntax_highlighting_conf']
+    lang = conf['lang']
+    if conf['defaultlangperdeck']:
+        deck_name = get_deck_name(mw)
+        if deck_name and deck_name in conf['deckdefaultlang']:
+            lang = conf['deckdefaultlang'][deck_name]
+    return lang
+
+def set_default_lang(mw, lang):
+    conf = mw.col.conf['syntax_highlighting_conf']
+    conf['lang'] = lang
+    if conf['defaultlangperdeck']:
+        deck_name = get_deck_name(mw)
+        if deck_name:
+            conf['deckdefaultlang'][deck_name] = lang
+
 class SyntaxHighlighting_Options(QWidget):
     def __init__(self, mw):
         super(SyntaxHighlighting_Options, self).__init__()
@@ -149,6 +177,10 @@ class SyntaxHighlighting_Options(QWidget):
     def switch_centerfragments(self):
         centerfragments_ = self.conf['centerfragments']
         self.conf['centerfragments'] = not centerfragments_
+
+    def switch_defaultlangperdeck(self):
+        defaultlangperdeck_ = self.conf['defaultlangperdeck']
+        self.conf['defaultlangperdeck'] = not defaultlangperdeck_
 
     def _assignConf(self):
         if conf_needs_sync(self.mw.col.conf):
@@ -174,12 +206,19 @@ class SyntaxHighlighting_Options(QWidget):
         center_checkbox.setChecked(self.conf['centerfragments'])
         center_checkbox.stateChanged.connect(self.switch_centerfragments)
         
+        defaultlangperdeck_label = QLabel('<b>Default to last language used per deck</b>')
+        defaultlangperdeck_checkbox = QCheckBox('')
+        defaultlangperdeck_checkbox.setChecked(self.conf['defaultlangperdeck'])
+        defaultlangperdeck_checkbox.stateChanged.connect(self.switch_defaultlangperdeck)
+        
         grid = QGridLayout()
         grid.setSpacing(10)
         grid.addWidget(linenos_label, 0, 0)
         grid.addWidget(linenos_checkbox, 0, 1)
         grid.addWidget(center_label, 1, 0)
         grid.addWidget(center_checkbox, 1, 1)
+        grid.addWidget(defaultlangperdeck_label, 2, 0)
+        grid.addWidget(defaultlangperdeck_checkbox, 2, 1)
 
         self.setLayout(grid) 
         
@@ -206,7 +245,7 @@ def init_highlighter(ed, *args, **kwargs):
 
     #  Get the last selected language (or the default language if the user
     # has never chosen any)
-    previous_lang = mw.col.conf['syntax_highlighting_conf']['lang']
+    previous_lang = get_default_lang(mw)
     ed.codeHighlightLangAlias = LANGUAGES_MAP[previous_lang]
 
     ### Add the buttons to the Icon Box
@@ -228,8 +267,7 @@ def init_highlighter(ed, *args, **kwargs):
     ed.iconsBox.addWidget(splitter)
 
 def onCodeHighlightLangSelect(self, lang):
-    mw.col.conf['syntax_highlighting_conf']['lang'] = lang
-    
+    set_default_lang(mw, lang)
     alias = LANGUAGES_MAP[lang]
     self.codeHighlightLangAlias = alias
 
