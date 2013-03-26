@@ -7,7 +7,7 @@ import os
 import sys
 
 from aqt import editor, addons, mw
-from aqt.utils import showInfo
+#from aqt.utils import showInfo
   # For those who are wondering, 'mw' means "Main Window"
 from anki.utils import json
 from anki import hooks
@@ -104,39 +104,23 @@ default_conf = {'linenos': True,  # show numbers by default
                 'lang': 'Python'} # default language is Python 
 ###############################################################
 
-def are_keys_in_sync(m1, m2):
-    for key in [ x for x in m1.keys() if x not in m2 ]:
-        return False
-
-    for key in [ x for x in m2.keys() if x not in m1 ]:
-        return False
-
-    return True
-
 def sync_keys(tosync, ref):
-    if are_keys_in_sync(tosync,ref):
-      return
-
     for key in [ x for x in tosync.keys() if x not in ref ]:
         del(tosync[key])
 
     for key in [ x for x in ref.keys() if x not in tosync ]:
         tosync[key] = ref[key]
 
-def sync_config_with_default(conf):
-    if not 'syntax_highlighting_conf' in conf:
-        conf['syntax_highlighting_conf'] = default_conf
+def sync_config_with_default(col):
+    if not 'syntax_highlighting_conf' in col.conf:
+        col.conf['syntax_highlighting_conf'] = default_conf
     else:
-        sync_keys(conf['syntax_highlighting_conf'], default_conf)
+        sync_keys(col.conf['syntax_highlighting_conf'], default_conf)
 
-def conf_needs_sync(conf):
-    if not 'syntax_highlighting_conf' in conf:
-      return True
-
-    if not are_keys_in_sync(conf['syntax_highlighting_conf'], default_conf):
-      return True
-
-    return False
+    # Mark collection state as modified, else config changes get lost unless 
+    # some unrelated action triggers the flush of collection data to db
+    col.setMod()
+    #col.flush()
 
 def get_deck_name(mw):
     deck_name = None
@@ -148,67 +132,59 @@ def get_deck_name(mw):
     return deck_name
 
 def get_default_lang(mw):
-    conf = mw.col.conf['syntax_highlighting_conf']
-    lang = conf['lang']
-    if conf['defaultlangperdeck']:
+    addon_conf = mw.col.conf['syntax_highlighting_conf']
+    lang = addon_conf['lang']
+    if addon_conf['defaultlangperdeck']:
         deck_name = get_deck_name(mw)
-        if deck_name and deck_name in conf['deckdefaultlang']:
-            lang = conf['deckdefaultlang'][deck_name]
+        if deck_name and deck_name in addon_conf['deckdefaultlang']:
+            lang = addon_conf['deckdefaultlang'][deck_name]
     return lang
 
 def set_default_lang(mw, lang):
-    conf = mw.col.conf['syntax_highlighting_conf']
-    conf['lang'] = lang
-    if conf['defaultlangperdeck']:
+    addon_conf = mw.col.conf['syntax_highlighting_conf']
+    addon_conf['lang'] = lang # Always update the overall default
+    if addon_conf['defaultlangperdeck']:
         deck_name = get_deck_name(mw)
         if deck_name:
-            conf['deckdefaultlang'][deck_name] = lang
+            addon_conf['deckdefaultlang'][deck_name] = lang
 
 class SyntaxHighlighting_Options(QWidget):
     def __init__(self, mw):
         super(SyntaxHighlighting_Options, self).__init__()
         self.mw = mw
-        self.conf = None
+        self.addon_conf = None
     
     def switch_linenos(self):
-        linenos_ = self.conf['linenos']
-        self.conf['linenos'] = not linenos_
+        linenos_ = self.addon_conf['linenos']
+        self.addon_conf['linenos'] = not linenos_
         
     def switch_centerfragments(self):
-        centerfragments_ = self.conf['centerfragments']
-        self.conf['centerfragments'] = not centerfragments_
+        centerfragments_ = self.addon_conf['centerfragments']
+        self.addon_conf['centerfragments'] = not centerfragments_
 
     def switch_defaultlangperdeck(self):
-        defaultlangperdeck_ = self.conf['defaultlangperdeck']
-        self.conf['defaultlangperdeck'] = not defaultlangperdeck_
+        defaultlangperdeck_ = self.addon_conf['defaultlangperdeck']
+        self.addon_conf['defaultlangperdeck'] = not defaultlangperdeck_
 
-    def _assignConf(self):
-        if conf_needs_sync(self.mw.col.conf):
-            showInfo('Default options need to be synced first. Open any deck to force this')
-            return False
-        self.conf = self.mw.col.conf['syntax_highlighting_conf']
-        return True
-        
     def setupUi(self):
-        ### Mask color for questions:
-        linenos_label = QLabel('<b>Line numbers</b>')
+        # If config options have changed, sync with default config first
+        sync_config_with_default(self.mw.col)
 
-        if not self._assignConf():
-            return
+        self.addon_conf = self.mw.col.conf['syntax_highlighting_conf']
 
         linenos_label = QLabel('<b>Line numbers</b>')
         linenos_checkbox = QCheckBox('')
-        linenos_checkbox.setChecked(self.conf['linenos'])
+        linenos_checkbox.setChecked(self.addon_conf['linenos'])
         linenos_checkbox.stateChanged.connect(self.switch_linenos)
 
         center_label = QLabel('<b>Center code fragments</b>')
         center_checkbox = QCheckBox('')
-        center_checkbox.setChecked(self.conf['centerfragments'])
+        center_checkbox.setChecked(self.addon_conf['centerfragments'])
         center_checkbox.stateChanged.connect(self.switch_centerfragments)
         
         defaultlangperdeck_label = QLabel('<b>Default to last language used per deck</b>')
         defaultlangperdeck_checkbox = QCheckBox('')
-        defaultlangperdeck_checkbox.setChecked(self.conf['defaultlangperdeck'])
+        defaultlangperdeck_checkbox.setChecked(self.addon_conf['defaultlangperdeck'])
         defaultlangperdeck_checkbox.stateChanged.connect(self.switch_defaultlangperdeck)
         
         grid = QGridLayout()
@@ -222,13 +198,13 @@ class SyntaxHighlighting_Options(QWidget):
 
         self.setLayout(grid) 
         
-        self.setWindowTitle('Syntax Highlighting (options)')    
+        self.setWindowTitle('Syntax Highlighting Options')    
         self.show()
 
 
 mw.SyntaxHighlighting_Options = SyntaxHighlighting_Options(mw)
 
-options_action = QAction("Syntax Highlighting (options)", mw)
+options_action = QAction("Syntax Highlighting Options ...", mw)
 mw.connect(options_action,
            SIGNAL("triggered()"),
            mw.SyntaxHighlighting_Options.setupUi)
@@ -241,7 +217,7 @@ QSplitter.add_code_langs_combobox = add_code_langs_combobox
 
 def init_highlighter(ed, *args, **kwargs):
     # If config options have changed, sync with default config first
-    sync_config_with_default(mw.col.conf)
+    sync_config_with_default(mw.col)
 
     #  Get the last selected language (or the default language if the user
     # has never chosen any)
@@ -304,11 +280,13 @@ for lex in get_all_lexers():
     
 ###############################################################
 def highlight_code(self):
+    addon_conf = mw.col.conf['syntax_highlighting_conf']
+
     #  Do we want line numbers? linenos is either true or false according
     # to the user's preferences
-    conf = mw.col.conf['syntax_highlighting_conf']
-    linenos = conf['linenos']
-    centerfragments = conf['centerfragments']
+    linenos = addon_conf['linenos']
+
+    centerfragments = addon_conf['centerfragments']
     
     selected_text = self.web.selectedText()
     if selected_text:
