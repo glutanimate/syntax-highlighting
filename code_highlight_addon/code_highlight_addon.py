@@ -191,7 +191,10 @@ def addons_folder(): return mw.pm.addonFolder()
 
 #  Tell Python where to look here for our stripped down
 # version of the Pygments package: 
-sys.path.insert(0, os.path.join(addons_folder(), "code_highlight_addon"))
+try:
+    __import__('pygments')
+except ImportError:
+    sys.path.insert(0, os.path.join(addons_folder(), "code_highlight_addon"))
 
 # Choose default language from the last to be used
 #lang_file_path = os.path.join(addons_folder(), "code_highlight_addon", "lang.txt")
