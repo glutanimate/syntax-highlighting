@@ -7,6 +7,7 @@ import os
 import sys
 
 from aqt import editor, addons, mw
+#from aqt.utils import showInfo
   # For those who are wondering, 'mw' means "Main Window"
 from anki.utils import json
 from anki import hooks
@@ -97,44 +98,113 @@ def add_code_langs_combobox(self, func, previous_lang):
 ####  - we create a new item in mw.col.conf. This syncs the
 ####    options across machines (but not on mobile)
 default_conf = {'linenos': True,  # show numbers by default
+                'centerfragments': True, # Use <center> when generating code fragments
+                'defaultlangperdeck': True, # Default to last used language per deck
+                'deckdefaultlang': {}, # Map to store the default language per deck
                 'lang': 'Python'} # default language is Python 
+###############################################################
+
+def sync_keys(tosync, ref):
+    for key in [ x for x in tosync.keys() if x not in ref ]:
+        del(tosync[key])
+
+    for key in [ x for x in ref.keys() if x not in tosync ]:
+        tosync[key] = ref[key]
+
+def sync_config_with_default(col):
+    if not 'syntax_highlighting_conf' in col.conf:
+        col.conf['syntax_highlighting_conf'] = default_conf
+    else:
+        sync_keys(col.conf['syntax_highlighting_conf'], default_conf)
+
+    # Mark collection state as modified, else config changes get lost unless 
+    # some unrelated action triggers the flush of collection data to db
+    col.setMod()
+    #col.flush()
+
+def get_deck_name(mw):
+    deck_name = None
+    try:
+        deck_name = mw.col.decks.current()['name']
+    except AttributeError:
+        # No deck opened?
+        deck_name = None
+    return deck_name
+
+def get_default_lang(mw):
+    addon_conf = mw.col.conf['syntax_highlighting_conf']
+    lang = addon_conf['lang']
+    if addon_conf['defaultlangperdeck']:
+        deck_name = get_deck_name(mw)
+        if deck_name and deck_name in addon_conf['deckdefaultlang']:
+            lang = addon_conf['deckdefaultlang'][deck_name]
+    return lang
+
+def set_default_lang(mw, lang):
+    addon_conf = mw.col.conf['syntax_highlighting_conf']
+    addon_conf['lang'] = lang # Always update the overall default
+    if addon_conf['defaultlangperdeck']:
+        deck_name = get_deck_name(mw)
+        if deck_name:
+            addon_conf['deckdefaultlang'][deck_name] = lang
 
 class SyntaxHighlighting_Options(QWidget):
     def __init__(self, mw):
         super(SyntaxHighlighting_Options, self).__init__()
         self.mw = mw
+        self.addon_conf = None
     
     def switch_linenos(self):
-        linenos_ = mw.col.conf['syntax_highlighting_conf']['linenos']
-        mw.col.conf['syntax_highlighting_conf']['linenos'] = not linenos_
+        linenos_ = self.addon_conf['linenos']
+        self.addon_conf['linenos'] = not linenos_
         
+    def switch_centerfragments(self):
+        centerfragments_ = self.addon_conf['centerfragments']
+        self.addon_conf['centerfragments'] = not centerfragments_
+
+    def switch_defaultlangperdeck(self):
+        defaultlangperdeck_ = self.addon_conf['defaultlangperdeck']
+        self.addon_conf['defaultlangperdeck'] = not defaultlangperdeck_
+
     def setupUi(self):
-        
-        ### Mask color for questions:
-        linenos_label = QLabel('<b>Line numbers</b><br>Switch on/off')
-        
+        # If config options have changed, sync with default config first
+        sync_config_with_default(self.mw.col)
+
+        self.addon_conf = self.mw.col.conf['syntax_highlighting_conf']
+
+        linenos_label = QLabel('<b>Line numbers</b>')
         linenos_checkbox = QCheckBox('')
-        if mw.col.conf['syntax_highlighting_conf']['linenos']:
-            linenos_checkbox.setChecked(True)
+        linenos_checkbox.setChecked(self.addon_conf['linenos'])
         linenos_checkbox.stateChanged.connect(self.switch_linenos)
+
+        center_label = QLabel('<b>Center code fragments</b>')
+        center_checkbox = QCheckBox('')
+        center_checkbox.setChecked(self.addon_conf['centerfragments'])
+        center_checkbox.stateChanged.connect(self.switch_centerfragments)
+        
+        defaultlangperdeck_label = QLabel('<b>Default to last language used per deck</b>')
+        defaultlangperdeck_checkbox = QCheckBox('')
+        defaultlangperdeck_checkbox.setChecked(self.addon_conf['defaultlangperdeck'])
+        defaultlangperdeck_checkbox.stateChanged.connect(self.switch_defaultlangperdeck)
         
         grid = QGridLayout()
         grid.setSpacing(10)
-        # 1st row:
         grid.addWidget(linenos_label, 0, 0)
         grid.addWidget(linenos_checkbox, 0, 1)
-        # there are no more rows yet :)
-        
-        
+        grid.addWidget(center_label, 1, 0)
+        grid.addWidget(center_checkbox, 1, 1)
+        grid.addWidget(defaultlangperdeck_label, 2, 0)
+        grid.addWidget(defaultlangperdeck_checkbox, 2, 1)
+
         self.setLayout(grid) 
         
-        self.setWindowTitle('Syntax Highlighting (options)')    
+        self.setWindowTitle('Syntax Highlighting Options')    
         self.show()
 
 
 mw.SyntaxHighlighting_Options = SyntaxHighlighting_Options(mw)
 
-options_action = QAction("Syntax Highlighting (options)", mw)
+options_action = QAction("Syntax Highlighting Options ...", mw)
 mw.connect(options_action,
            SIGNAL("triggered()"),
            mw.SyntaxHighlighting_Options.setupUi)
@@ -146,14 +216,12 @@ QSplitter.add_plugin_button_ = add_plugin_button_
 QSplitter.add_code_langs_combobox = add_code_langs_combobox
 
 def init_highlighter(ed, *args, **kwargs):
-    #  If the addon is being run for the first time, add the preferences
-    # to the global configuration
-    if not 'syntax_highlighting_conf' in mw.col.conf:
-        ed.mw.col.conf['syntax_highlighting_conf'] = default_conf
-    
+    # If config options have changed, sync with default config first
+    sync_config_with_default(mw.col)
+
     #  Get the last selected language (or the default language if the user
     # has never chosen any)
-    previous_lang = mw.col.conf['syntax_highlighting_conf']['lang']
+    previous_lang = get_default_lang(mw)
     ed.codeHighlightLangAlias = LANGUAGES_MAP[previous_lang]
 
     ### Add the buttons to the Icon Box
@@ -175,8 +243,7 @@ def init_highlighter(ed, *args, **kwargs):
     ed.iconsBox.addWidget(splitter)
 
 def onCodeHighlightLangSelect(self, lang):
-    mw.col.conf['syntax_highlighting_conf']['lang'] = lang
-    
+    set_default_lang(mw, lang)
     alias = LANGUAGES_MAP[lang]
     self.codeHighlightLangAlias = alias
 
@@ -216,9 +283,13 @@ for lex in get_all_lexers():
     
 ###############################################################
 def highlight_code(self):
+    addon_conf = mw.col.conf['syntax_highlighting_conf']
+
     #  Do we want line numbers? linenos is either true or false according
     # to the user's preferences
-    linenos = mw.col.conf['syntax_highlighting_conf']['linenos']
+    linenos = addon_conf['linenos']
+
+    centerfragments = addon_conf['centerfragments']
     
     selected_text = self.web.selectedText()
     if selected_text:
@@ -241,14 +312,23 @@ def highlight_code(self):
     
     my_formatter = HtmlFormatter(linenos=linenos, noclasses=True, font_size=16)
     if linenos:
-        pretty_code = "".join(["<center>",
-                               highlight(code, my_lexer, my_formatter),
-                               "</center><br>"])
+       if centerfragments:
+            pretty_code = "".join(["<center>",
+                                 highlight(code, my_lexer, my_formatter),
+                                 "</center><br>"])
+       else:
+            pretty_code = "".join([highlight(code, my_lexer, my_formatter),
+                                 "<br>"])
     # TODO: understand why this is neccessary
     else:
-        pretty_code = "".join(["<center><table><tbody><tr><td>",
-                               highlight(code, my_lexer, my_formatter),
-                               "</td></tr></tbody></table></center><br>"])
+        if centerfragments:
+            pretty_code = "".join(["<center><table><tbody><tr><td>",
+                                   highlight(code, my_lexer, my_formatter),
+                                   "</td></tr></tbody></table></center><br>"])
+        else:
+            pretty_code = "".join(["<table><tbody><tr><td>",
+                                   highlight(code, my_lexer, my_formatter),
+                                   "</td></tr></tbody></table><br>"])
 
     # These two lines insert a piece of HTML in the current cursor position
     self.web.eval("document.execCommand('inserthtml', false, %s);"
