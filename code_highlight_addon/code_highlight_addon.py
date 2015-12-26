@@ -99,6 +99,7 @@ def add_code_langs_combobox(self, func, previous_lang):
 ####    options across machines (but not on mobile)
 default_conf = {'linenos': True,  # show numbers by default
                 'centerfragments': True, # Use <center> when generating code fragments
+                'cssclasses': False, # Use css classes instead of colors directly in html
                 'defaultlangperdeck': True, # Default to last used language per deck
                 'deckdefaultlang': {}, # Map to store the default language per deck
                 'lang': 'Python'} # default language is Python 
@@ -157,7 +158,7 @@ class SyntaxHighlighting_Options(QWidget):
     def switch_linenos(self):
         linenos_ = self.addon_conf['linenos']
         self.addon_conf['linenos'] = not linenos_
-        
+
     def switch_centerfragments(self):
         centerfragments_ = self.addon_conf['centerfragments']
         self.addon_conf['centerfragments'] = not centerfragments_
@@ -165,6 +166,10 @@ class SyntaxHighlighting_Options(QWidget):
     def switch_defaultlangperdeck(self):
         defaultlangperdeck_ = self.addon_conf['defaultlangperdeck']
         self.addon_conf['defaultlangperdeck'] = not defaultlangperdeck_
+
+    def switch_cssclasses(self):
+        cssclasses_ = self.addon_conf['cssclasses']
+        self.addon_conf['cssclasses'] = not cssclasses_
 
     def setupUi(self):
         # If config options have changed, sync with default config first
@@ -181,20 +186,28 @@ class SyntaxHighlighting_Options(QWidget):
         center_checkbox = QCheckBox('')
         center_checkbox.setChecked(self.addon_conf['centerfragments'])
         center_checkbox.stateChanged.connect(self.switch_centerfragments)
-        
+
+        cssclasses_label = QLabel('<b>Use CSS classes</b>')
+        cssclasses_checkbox = QCheckBox('')
+        cssclasses_checkbox.setChecked(self.addon_conf['cssclasses'])
+        cssclasses_checkbox.stateChanged.connect(self.switch_cssclasses)
+
         defaultlangperdeck_label = QLabel('<b>Default to last language used per deck</b>')
         defaultlangperdeck_checkbox = QCheckBox('')
         defaultlangperdeck_checkbox.setChecked(self.addon_conf['defaultlangperdeck'])
         defaultlangperdeck_checkbox.stateChanged.connect(self.switch_defaultlangperdeck)
-        
+
+
         grid = QGridLayout()
         grid.setSpacing(10)
         grid.addWidget(linenos_label, 0, 0)
         grid.addWidget(linenos_checkbox, 0, 1)
         grid.addWidget(center_label, 1, 0)
         grid.addWidget(center_checkbox, 1, 1)
-        grid.addWidget(defaultlangperdeck_label, 2, 0)
-        grid.addWidget(defaultlangperdeck_checkbox, 2, 1)
+        grid.addWidget(cssclasses_label, 2, 0)
+        grid.addWidget(cssclasses_checkbox, 2, 1)
+        grid.addWidget(defaultlangperdeck_label, 3, 0)
+        grid.addWidget(defaultlangperdeck_checkbox, 3, 1)
 
         self.setLayout(grid) 
         
@@ -291,6 +304,12 @@ def highlight_code(self):
 
     centerfragments = addon_conf['centerfragments']
     
+    # Do we want to use css classes or have formatting directly in HTML?
+    # Using css classes takes up less space and gives the user more
+    # customization options, but is less self-contained as it requires
+    # setting the styling on every note type where code is used
+    noclasses = not addon_conf['cssclasses']
+
     selected_text = self.web.selectedText()
     if selected_text:
         #  Sometimes, self.web.selectedText() contains the unicode character
@@ -307,10 +326,9 @@ def highlight_code(self):
     
     # Select the lexer for the correct language
     my_lexer = get_lexer_by_name(langAlias, stripall=True)
-    # Tell pygments that we will be generating HTML without CSS.
-    # HTML without CSS may take more space, but it's self contained.
     
-    my_formatter = HtmlFormatter(linenos=linenos, noclasses=True, font_size=16)
+    # Create html formatter object including flags for line nums and css classes
+    my_formatter = HtmlFormatter(linenos=linenos, noclasses=noclasses, font_size=16)
     if linenos:
        if centerfragments:
             pretty_code = "".join(["<center>",
