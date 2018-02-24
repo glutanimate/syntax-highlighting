@@ -29,8 +29,7 @@ from aqt.qt import *
 from aqt import mw
 from aqt.editor import Editor
 from anki.utils import json
-from anki.hooks import addHook
-from anki import hooks
+from anki.hooks import addHook, wrap
 
 ###############################################################
 ###
@@ -291,6 +290,9 @@ def onCodeHighlightLangSelect(ed, lang):
     ed.codeHighlightLangAlias = alias
 
 
+select_elm = ("""<select onchange='pycmd("shLang:" +"""
+              """ this.selectedOptions[0].text)' """
+              """style='vertical-align: top;'>{}</select>""")
 
 def onSetupButtons21(buttons, editor):
     """Add buttons to Editor for Anki 2.1.x"""
@@ -302,22 +304,26 @@ def onSetupButtons21(buttons, editor):
     buttons.append(b)
 
     # HTML "combobox"
-
-    frame_str = """<select class=blabel>{}</select>"""
-    option_str = """<option value="{}">{}</option>"""
-    
     previous_lang = get_default_lang(mw)
 
+    option_str = """<option>{}</option>"""
     options = []
-    options.append(option_str.format(previous_lang, previous_lang))
+    
+    options.append(option_str.format(previous_lang))
     for lang in sorted(LANGUAGES_MAP.keys()):
-        options.append(option_str.format(lang, lang))
+        options.append(option_str.format(lang))
 
-    combo = frame_str.format("".join(options))
-
+    combo = select_elm.format("".join(options))
     buttons.append(combo)
+    
     return buttons
 
+
+def onBridgeCmd(self, cmd, _old):
+    if not cmd.startswith("shLang"):
+        return _old(self, cmd)
+    (type, lang) = cmd.split(":")
+    onCodeHighlightLangSelect(self, lang)
 
 
 ###############################################################
@@ -398,4 +404,6 @@ def highlight_code(self):
 
 if anki21:
     addHook("setupEditorButtons", onSetupButtons21)
-Editor.__init__ = hooks.wrap(Editor.__init__, init_highlighter)
+    Editor.onBridgeCmd = wrap(Editor.onBridgeCmd, onBridgeCmd, "around")
+
+Editor.__init__ = wrap(Editor.__init__, init_highlighter)
