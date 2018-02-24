@@ -1,21 +1,60 @@
 
+Allows you to insert **syntax-highlighted code snippets** into your notes.
+
 **SCREENSHOT**
 
-![](https://raw.githubusercontent.com/glutanimate/syntax-highlighter/master/screenshots/screenshot.png)
+![](https://raw.githubusercontent.com/glutanimate/syntax-highlighter/master/screenshots/screenshot_python.png)
 
 **COMPATIBILITY**
 
-This add-on only works with Anki 2.0 (≥ 2.0.30). The 2.1 beta releases are currently **unsupported**.
-
-OR
-
 Initial tests have shown this add-on to both work on Anki 2.0 and Anki 2.1. However, as the Anki 2.1 release line is still in beta, I cannot provide any kind of official support for this platform. **Please do not report issues with Anki 2.1 in the review section below**. Instead, please report all issues you encounter on [GitHub](https://github.com/glutanimate/syntax-highlighter/issues).
+
+**RELEASE LOG**
+
+- 2018-02-??: Initial release of this fork
+- 2015-12-25: CSS class option implemented by Tim Rae
+- 2015-11-20: Last updated release of the original add-on on AnkiWeb
+- 2012: Initial release
+
+**LATEST CHANGES AND NEWS**
+
+*2018-02-??*
+
+Thanks to the generous support of a fellow Anki user I was finally able to update and port this add-on to Anki 2.1. Aside from Anki 2.1 support, the current revision of this add-on also comes with the following changes:
+
+– **New**: Option to apply syntax highlighting via CSS
+- **Fixed**: Various bugs and error messages of the previous version
+- 
 
 **USAGE**
 
+1. Open the Add Note window in Anki.
+2. Compose your code snippet in your favorite text editor.
+3. Copy the code to the clipboard (e.g. Ctrl+C)
+4. Move the cursor to where you want to insert your code snippet.
+5. In Anki, there should be a Thunderbolt icon in the top right-hand corner of your editing window with a dropdown.
+6. Choose the language your snippet is written in, and click the Thunderbolt, or use it's associated hotkey (default: `Alt+S`).
+7. Anki will copy your syntax highlighted snippet to the field
+
+Alternatively, you can compose your code directly in Anki, highlight it, and then click the lightning button. But it is much better to use a dedicated code editor with monospaced fonts and proper syntax highlighting.
+
+The add-on will automatically remember the last programming language you chose, even after you restarting Anki.
+
 **CONFIGURATION**
 
-**CHANGELOG**
+Currently there are four configuration options, available from Anki's main screen through *Tools* → *Syntax Highlighting Options*:
+
+- **Line numbers** (default: true): Whether or not to include line numbers in the highlighted code
+- **Center code fragments** (default: true): Whether or not to automatically center the code in the field
+- **Use CSS classes** (default: false): Whether or not to use CSS classes instead of inline styles for syntax highlighting.
+
+    Using css classes allows you more customization, and results in a smaller database size, but you'll need to manually include a styling sheet in every note type, so it's only recommended for advanced users. You will find some default CSS code that you can include in your templates on [GitHub](https://github.com/glutanimate/syntax-highlighter/docs/css.md).
+
+- **Default to last language used per deck** (default: true): Whether or not to remember the last programming language for each deck individually
+
+Please note that changes in the configuration will only affect new notes.
+
+
 
 **SUPPORT**
 
@@ -23,9 +62,17 @@ Please **do not report issues or bugs in the review section below**. I can't rep
 
 **CREDITS AND LICENSE**
 
-*Copyright (c) 2018 [Glutanimate](https://glutanimate.com/)*
+*Copyright © 2012-2015 [Tiago Barroso](https://github.com/tmbb)*
 
-Licensed under the [GNU AGPLv3](https://www.gnu.org/licenses/agpl.html). The code for this add-on is available on [![GitHub icon](https://glutanimate.com/logos/github.svg) GitHub](https://github.com/glutanimate/syntax-highlighter).
+*Copyright © 2015 [Tim Rae](https://github.com/timrae)*
+
+*Copyright © 2018 [Aristotelis P.](https://glutanimate.com/)*
+
+*Code Syntax Highlighter* is based on [*Syntax Highlighting for Code*](https://github.com/tmbb/SyntaxHighlight) by [Tiago Barroso](https://github.com/tmbb). All credit for the original add-on goes to him. A major thanks is also due for [Tim Rae](https://github.com/timrae), who extended the original add-on with CSS support.
+
+The present fork and update to Anki 2.1 was made possible through the generous support of a fellow Anki user who would like to remain anonymous.
+
+Licensed under the [GNU AGPLv3](https://www.gnu.org/licenses/agpl.html). The code for this add-on is available on [![GitHub icon](https://glutanimate.com/logos/github.svg) GitHub](https://github.com/glutanimate/syntax-highlighter). For more information on the licensing terms and other software shipped with this package please check out the [README](https://github.com/glutanimate/syntax-highlighter#credits).
 
 **MORE RESOURCES**
 

@@ -1,39 +1,10 @@
-NEW:
-- added option to use css classes (disabled by default)
-- you can now toggle line numbers on or off in the source code
-- some small changes have been made. Everyone should upgrade
+### CSS Templates for Code Syntax Highlighter
 
-Highlight Code
----------------------
-This addon allows you to copy source code from a number of programming (and markup) languages and paste it in an Anki field with proper syntax highlighting.
-The highlighted code is stored by Anki in HTML with CSS, in a copy/paste friendly format, which is useful if you want to correct a mistake in your code.
+#### Important notes
 
-How to use it
-------------------- 
-The addon adds a lightning bolt icon and a drop down menu to the icons bar of the note editor.
-To paste some highlighted code, you first copy the correct code to the System Clipboard (with Ctrl+C under Windows, for example).
-You can write the code directly in Anki and copy form there, but I find it much easier to write it on a proper text editor.
-You can of course copy code from wherever you want, including a webpage.
-Please note that is you want to highlight code from outside of Anki, just selecting the code is not enough.
-You really have to copy it to the System Clipboard.
-Now that you have copied some code, can use the dropdown menu to choose the appropriate programming language.
-After that, place the cursor in the position where you want to insert the code, and click the lightning bold icon.
-This will insert a HTML table with the properly highlighted code. Instead of clicking the icon to paste the code, you can use the keyboard shortcut Alt+s.
-The addon remembers the last programming language you chose, even after you restart Anki. 
+Using css classes allows you more customization, and results in a smaller database size, but you'll need to manually include a styling sheet in every note type, so it's only recommended for advanced users.
 
-If you want to highlight code from Anki, you don’t need to copy it to the system clipboard.
-You can just select the code and highlight it directly (by clicking the lightning bolt button or using the Alt+s shortcut)
-
-Configuration
------------------
-
-You can choose whether or not to display line numbers in the highlighted source code.
-Just go to Tools > Syntax Highlighting (options).
-A new window will appear.
-Toggle the check box on or off to display or hide the line numbers.
-
-You can also choose whether to include the styling directly in the text html (default) or to use css classes.
-Using css classes allows you more customization, and results in a smaller database size, but you'll need to manually include a styling sheet in every note type, so it's only recommended for advanced users. Here is some default css code to include in your templates:
+#### Default template
 
 ```css
 .highlight {
@@ -115,11 +86,3 @@ Using css classes allows you more customization, and results in a smaller databa
 .highlight .il { color: #666666 } /* Literal.Number.Integer.Long */
 ```
 
-
-Pygments 
--------------
-All syntax highlighting is handled by the python package Pygments.
-Credit for everything related to the syntax highlighting goes to the respective authors.
-This addon uses a slightly customized version of the Pygments package to eliminate external dependencies. 
-
-Author Contact: tmbb@campus.ul.pt
