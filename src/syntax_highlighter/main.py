@@ -19,81 +19,13 @@ from aqt.qt import *
 import os
 import sys
 
-from aqt import editor, addons, mw
-#from aqt.utils import showInfo
-  # For those who are wondering, 'mw' means "Main Window"
+from aqt import editor, mw
 from anki.utils import json
 from anki import hooks
 
-# import the lightning bolt icon
-from .resources import *
+from .consts import *
 
-###############################################################
-###
-### Utilities to generate buttons
-###
-###############################################################
-standardHeight = 20
-standardWidth  = 20
-
-# This is taken from the aqt source code to 
-def add_plugin_button_(self,
-                     ed,
-                     name,
-                     func,
-                     text="",
-                     key=None,
-                     tip=None,
-                     height=False,
-                     width=False,
-                     icon=None,
-                     check=False,
-                     native=False,
-                     canDisable=True):
-                      
-    b = QPushButton(text)
-    
-    if check:
-        b.clicked[bool].connect(func)
-    else:
-        b.clicked.connect(func)
-        
-    if height:
-        b.setFixedHeight(height)
-    if width:
-        b.setFixedWidth(width)
-        
-    if not native:
-        b.setStyle(ed.plastiqueStyle)
-        b.setFocusPolicy(Qt.NoFocus)
-    else:
-        b.setAutoDefault(False)
-        
-    if icon:
-        b.setIcon(QIcon(icon))
-    if key:
-        b.setShortcut(QKeySequence(key))
-    if tip:
-        b.setToolTip(tip)
-    if check:
-        b.setCheckable(True)
-        
-    self.addWidget(b) # this part is changed
-        
-    if canDisable:
-        ed._buttons[name] = b
-    return b
-
-###############################################################
-def add_code_langs_combobox(self, func, previous_lang):
-    combo = QComboBox()
-    combo.addItem(previous_lang)
-    for lang in sorted(LANGUAGES_MAP.keys()):
-        combo.addItem(lang)
-        
-    combo.activated[str].connect(func)
-    self.addWidget(combo)
-    return combo
+icon_path = os.path.join(addon_path, "icons", "button.png")
 
 ###############################################################
 ###
@@ -226,9 +158,76 @@ mw.SyntaxHighlighting_Options = SyntaxHighlighting_Options(mw)
 options_action = QAction("Syntax Highlighting Options ...", mw)
 options_action.triggered.connect(mw.SyntaxHighlighting_Options.setupUi)
 mw.form.menuTools.addAction(options_action)
-###############################################################
+
 
 ###############################################################
+###
+### Utilities to generate buttons
+###
+###############################################################
+
+standardHeight = 20
+standardWidth  = 20
+
+# This is taken from the aqt source code to 
+def add_plugin_button_(self,
+                     ed,
+                     name,
+                     func,
+                     text="",
+                     key=None,
+                     tip=None,
+                     height=False,
+                     width=False,
+                     icon=None,
+                     check=False,
+                     native=False,
+                     canDisable=True):
+                      
+    b = QPushButton(text)
+    
+    if check:
+        b.clicked[bool].connect(func)
+    else:
+        b.clicked.connect(func)
+        
+    if height:
+        b.setFixedHeight(height)
+    if width:
+        b.setFixedWidth(width)
+        
+    if not native:
+        b.setStyle(ed.plastiqueStyle)
+        b.setFocusPolicy(Qt.NoFocus)
+    else:
+        b.setAutoDefault(False)
+        
+    if icon:
+        b.setIcon(QIcon(icon))
+    if key:
+        b.setShortcut(QKeySequence(key))
+    if tip:
+        b.setToolTip(tip)
+    if check:
+        b.setCheckable(True)
+        
+    self.addWidget(b) # this part is changed
+        
+    if canDisable:
+        ed._buttons[name] = b
+    return b
+
+def add_code_langs_combobox(self, func, previous_lang):
+    combo = QComboBox()
+    combo.addItem(previous_lang)
+    for lang in sorted(LANGUAGES_MAP.keys()):
+        combo.addItem(lang)
+        
+    combo.activated[str].connect(func)
+    self.addWidget(combo)
+    return combo
+
+
 QSplitter.add_plugin_button_ = add_plugin_button_
 QSplitter.add_code_langs_combobox = add_code_langs_combobox
 
@@ -247,10 +246,8 @@ def init_highlighter(ed, *args, **kwargs):
                              "highlight_code",
                              ed.highlight_code,
                              key="Alt+s",
-                             height=standardHeight,
-                             width=standardWidth,
                              text="",
-                             icon=":/icons/button-icon.png",
+                             icon=icon_path,
                              tip=_("Paste highlighted code (Alt+s)"),
                              check=False)
     splitter.add_code_langs_combobox(ed.onCodeHighlightLangSelect, previous_lang)
