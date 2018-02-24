@@ -14,18 +14,21 @@ License: GNU AGPLv3 <https://www.gnu.org/licenses/agpl.html>
 
 from __future__ import unicode_literals
 
-from aqt.qt import *
-
 import os
 import sys
 
-from aqt import editor, mw
+from .consts import *
+# always use shipped pygments library
+sys.path.insert(0, os.path.join(addon_path, "libs"))
+                                   
+from pygments import highlight
+from pygments.lexers import get_lexer_by_name, get_all_lexers
+from pygments.formatters import HtmlFormatter
+
+from aqt.qt import *
+from aqt import mw, editor
 from anki.utils import json
 from anki import hooks
-
-from .consts import *
-
-icon_path = os.path.join(addon_path, "icons", "button.png")
 
 ###############################################################
 ###
@@ -227,6 +230,7 @@ def add_code_langs_combobox(self, func, previous_lang):
     self.addWidget(combo)
     return combo
 
+icon_path = os.path.join(addon_path, "icons", "button.png")
 
 QSplitter.add_plugin_button_ = add_plugin_button_
 QSplitter.add_code_langs_combobox = add_code_langs_combobox
@@ -262,24 +266,6 @@ def onCodeHighlightLangSelect(self, lang):
     self.codeHighlightLangAlias = alias
 
 ###############################################################
-
-###############################################################
-###
-### Deals with highlighting
-###
-###############################################################
-def addons_folder(): return mw.pm.addonFolder()
-
-
-# always use shipped pygments library
-sys.path.insert(0, os.path.join(addons_folder(), "syntax_highlighter", "libs"))
-
-# Choose default language from the last to be used
-#lang_file_path = os.path.join(addons_folder(), "code_highlight_addon", "lang.txt")
-                                   
-from pygments import highlight
-from pygments.lexers import get_lexer_by_name, get_all_lexers
-from pygments.formatters import HtmlFormatter
 
 # This code sets a correspondence between:
 #  The "language names": long, descriptive names we want
