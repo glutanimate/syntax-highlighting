@@ -287,7 +287,7 @@ def addons_folder(): return mw.pm.addonFolder()
 
 
 # always use shipped pygments library
-sys.path.insert(0, os.path.join(addons_folder(), "code_highlight_addon/libs"))
+sys.path.insert(0, os.path.join(addons_folder(), "syntax_highlighter", "libs"))
 
 # Choose default language from the last to be used
 #lang_file_path = os.path.join(addons_folder(), "code_highlight_addon", "lang.txt")
