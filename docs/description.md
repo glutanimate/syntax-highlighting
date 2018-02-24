@@ -22,7 +22,7 @@ Initial tests have shown this add-on to both work on Anki 2.0 and Anki 2.1. Howe
 
 Thanks to the generous support of a fellow Anki user I was finally able to update and port this add-on to Anki 2.1. Aside from Anki 2.1 support, the current revision of this add-on also comes with the following changes:
 
-– **New**: Option to apply syntax highlighting via CSS
+- **New**: Option to apply syntax highlighting via CSS
 - **Fixed**: Various bugs and error messages of the previous version
 - 
 
@@ -31,14 +31,14 @@ Thanks to the generous support of a fellow Anki user I was finally able to updat
 1. Open the Add Note window in Anki.
 2. Compose your code snippet in your favorite text editor.
 3. Copy the code to the clipboard (e.g. Ctrl+C)
-4. Move the cursor to where you want to insert your code snippet.
-5. In Anki, there should be a Thunderbolt icon in the top right-hand corner of your editing window with a dropdown.
-6. Choose the language your snippet is written in, and click the Thunderbolt, or use it's associated hotkey (default: `Alt+S`).
+4. Move the cursor to to the field you want to insert your code snippet into
+5. In the top right corner of the editing window there should be a new Thunderbolt icon with a dropdown.
+6. Choose the language your snippet is written in, and click the Thunderbolt / use it's associated hotkey (default: `Alt+S`).
 7. Anki will copy your syntax highlighted snippet to the field
 
-Alternatively, you can compose your code directly in Anki, highlight it, and then click the lightning button. But it is much better to use a dedicated code editor with monospaced fonts and proper syntax highlighting.
+Alternatively, you can compose your code directly in Anki, highlight it, and then click the lightning button. But generally it is much more convenient to use a dedicated code editor with monospaced fonts and proper syntax highlighting.
 
-The add-on will automatically remember the last programming language you chose, even after you restarting Anki.
+The add-on will automatically remember the last programming language you chose, even after restarting Anki.
 
 **CONFIGURATION**
 
@@ -48,7 +48,7 @@ Currently there are four configuration options, available from Anki's main scree
 - **Center code fragments** (default: true): Whether or not to automatically center the code in the field
 - **Use CSS classes** (default: false): Whether or not to use CSS classes instead of inline styles for syntax highlighting.
 
-    Using css classes allows you more customization, and results in a smaller database size, but you'll need to manually include a styling sheet in every note type, so it's only recommended for advanced users. You will find some default CSS code that you can include in your templates on [GitHub](https://github.com/glutanimate/syntax-highlighter/docs/css.md).
+    Using css classes allows you more customization, and results in a smaller database size, but you'll need to manually include a styling sheet in every note type, so it's only recommended for advanced users. You will find some default CSS code that you can include in your templates on [GitHub](https://github.com/glutanimate/syntax-highlighter/blob/master/docs/css.md).
 
 - **Default to last language used per deck** (default: true): Whether or not to remember the last programming language for each deck individually
 
@@ -68,7 +68,7 @@ Please **do not report issues or bugs in the review section below**. I can't rep
 
 *Copyright © 2018 [Aristotelis P.](https://glutanimate.com/)*
 
-*Code Syntax Highlighter* is based on [*Syntax Highlighting for Code*](https://github.com/tmbb/SyntaxHighlight) by [Tiago Barroso](https://github.com/tmbb). All credit for the original add-on goes to him. A major thanks is also due for [Tim Rae](https://github.com/timrae), who extended the original add-on with CSS support.
+*Code Syntax Highlighter* is based on [*Syntax Highlighting for Code*](https://github.com/tmbb/SyntaxHighlight) by [Tiago Barroso](https://github.com/tmbb). All credit for the original add-on goes to him. A major thanks is also due to [Tim Rae](https://github.com/timrae), who extended the original add-on with CSS support.
 
 The present fork and update to Anki 2.1 was made possible through the generous support of a fellow Anki user who would like to remain anonymous.
 

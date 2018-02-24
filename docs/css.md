@@ -1,10 +1,16 @@
 ### CSS Templates for Code Syntax Highlighter
 
-#### Important notes
+#### Important Notes
 
 Using css classes allows you more customization, and results in a smaller database size, but you'll need to manually include a styling sheet in every note type, so it's only recommended for advanced users.
 
-#### Default template
+#### Theme Repositories
+
+A wide selection of different CSS themes may be found [here](https://jwarby.github.io/jekyll-pygments-themes/languages/python.html).
+
+#### Default Template
+
+Here's one example of a customized CSS theme for Anki that should work very well with AnkiDroid's night mode (credits: @timrae):
 
 ```css
 .highlight {
