@@ -20,7 +20,7 @@ import sys
 from .consts import *
 # always use shipped pygments library
 sys.path.insert(0, os.path.join(addon_path, "libs"))
-                                   
+
 from pygments import highlight
 from pygments.lexers import get_lexer_by_name, get_all_lexers
 from pygments.formatters import HtmlFormatter
@@ -32,26 +32,28 @@ from anki import hooks
 
 ###############################################################
 ###
-### Configurable preferences
+# Configurable preferences
 ###
 ###############################################################
-#### Defaults conf
-####  - we create a new item in mw.col.conf. This syncs the
-####    options across machines (but not on mobile)
+# Defaults conf
+# - we create a new item in mw.col.conf. This syncs the
+# options across machines (but not on mobile)
 default_conf = {'linenos': True,  # show numbers by default
-                'centerfragments': True, # Use <center> when generating code fragments
-                'cssclasses': False, # Use css classes instead of colors directly in html
-                'defaultlangperdeck': True, # Default to last used language per deck
-                'deckdefaultlang': {}, # Map to store the default language per deck
-                'lang': 'Python'} # default language is Python 
+                'centerfragments': True,  # Use <center> when generating code fragments
+                'cssclasses': False,  # Use css classes instead of colors directly in html
+                'defaultlangperdeck': True,  # Default to last used language per deck
+                'deckdefaultlang': {},  # Map to store the default language per deck
+                'lang': 'Python'}  # default language is Python
 ###############################################################
 
+
 def sync_keys(tosync, ref):
-    for key in [ x for x in list(tosync.keys()) if x not in ref ]:
+    for key in [x for x in list(tosync.keys()) if x not in ref]:
         del(tosync[key])
 
-    for key in [ x for x in list(ref.keys()) if x not in tosync ]:
+    for key in [x for x in list(ref.keys()) if x not in tosync]:
         tosync[key] = ref[key]
+
 
 def sync_config_with_default(col):
     if not 'syntax_highlighting_conf' in col.conf:
@@ -59,10 +61,11 @@ def sync_config_with_default(col):
     else:
         sync_keys(col.conf['syntax_highlighting_conf'], default_conf)
 
-    # Mark collection state as modified, else config changes get lost unless 
+    # Mark collection state as modified, else config changes get lost unless
     # some unrelated action triggers the flush of collection data to db
     col.setMod()
-    #col.flush()
+    # col.flush()
+
 
 def get_deck_name(mw):
     deck_name = None
@@ -73,6 +76,7 @@ def get_deck_name(mw):
         deck_name = None
     return deck_name
 
+
 def get_default_lang(mw):
     addon_conf = mw.col.conf['syntax_highlighting_conf']
     lang = addon_conf['lang']
@@ -82,20 +86,22 @@ def get_default_lang(mw):
             lang = addon_conf['deckdefaultlang'][deck_name]
     return lang
 
+
 def set_default_lang(mw, lang):
     addon_conf = mw.col.conf['syntax_highlighting_conf']
-    addon_conf['lang'] = lang # Always update the overall default
+    addon_conf['lang'] = lang  # Always update the overall default
     if addon_conf['defaultlangperdeck']:
         deck_name = get_deck_name(mw)
         if deck_name:
             addon_conf['deckdefaultlang'][deck_name] = lang
+
 
 class SyntaxHighlighting_Options(QWidget):
     def __init__(self, mw):
         super(SyntaxHighlighting_Options, self).__init__()
         self.mw = mw
         self.addon_conf = None
-    
+
     def switch_linenos(self):
         linenos_ = self.addon_conf['linenos']
         self.addon_conf['linenos'] = not linenos_
@@ -133,11 +139,13 @@ class SyntaxHighlighting_Options(QWidget):
         cssclasses_checkbox.setChecked(self.addon_conf['cssclasses'])
         cssclasses_checkbox.stateChanged.connect(self.switch_cssclasses)
 
-        defaultlangperdeck_label = QLabel('<b>Default to last language used per deck</b>')
+        defaultlangperdeck_label = QLabel(
+            '<b>Default to last language used per deck</b>')
         defaultlangperdeck_checkbox = QCheckBox('')
-        defaultlangperdeck_checkbox.setChecked(self.addon_conf['defaultlangperdeck'])
-        defaultlangperdeck_checkbox.stateChanged.connect(self.switch_defaultlangperdeck)
-
+        defaultlangperdeck_checkbox.setChecked(
+            self.addon_conf['defaultlangperdeck'])
+        defaultlangperdeck_checkbox.stateChanged.connect(
+            self.switch_defaultlangperdeck)
 
         grid = QGridLayout()
         grid.setSpacing(10)
@@ -150,9 +158,9 @@ class SyntaxHighlighting_Options(QWidget):
         grid.addWidget(defaultlangperdeck_label, 3, 0)
         grid.addWidget(defaultlangperdeck_checkbox, 3, 1)
 
-        self.setLayout(grid) 
-        
-        self.setWindowTitle('Syntax Highlighting Options')    
+        self.setLayout(grid)
+
+        self.setWindowTitle('Syntax Highlighting Options')
         self.show()
 
 
@@ -165,46 +173,48 @@ mw.form.menuTools.addAction(options_action)
 
 ###############################################################
 ###
-### Utilities to generate buttons
+# Utilities to generate buttons
 ###
 ###############################################################
 
 standardHeight = 20
-standardWidth  = 20
+standardWidth = 20
 
-# This is taken from the aqt source code to 
+# This is taken from the aqt source code to
+
+
 def add_plugin_button_(self,
-                     ed,
-                     name,
-                     func,
-                     text="",
-                     key=None,
-                     tip=None,
-                     height=False,
-                     width=False,
-                     icon=None,
-                     check=False,
-                     native=False,
-                     canDisable=True):
-                      
+                       ed,
+                       name,
+                       func,
+                       text="",
+                       key=None,
+                       tip=None,
+                       height=False,
+                       width=False,
+                       icon=None,
+                       check=False,
+                       native=False,
+                       canDisable=True):
+
     b = QPushButton(text)
-    
+
     if check:
         b.clicked[bool].connect(func)
     else:
         b.clicked.connect(func)
-        
+
     if height:
         b.setFixedHeight(height)
     if width:
         b.setFixedWidth(width)
-        
+
     if not native:
         b.setStyle(ed.plastiqueStyle)
         b.setFocusPolicy(Qt.NoFocus)
     else:
         b.setAutoDefault(False)
-        
+
     if icon:
         b.setIcon(QIcon(icon))
     if key:
@@ -213,27 +223,30 @@ def add_plugin_button_(self,
         b.setToolTip(tip)
     if check:
         b.setCheckable(True)
-        
-    self.addWidget(b) # this part is changed
-        
+
+    self.addWidget(b)  # this part is changed
+
     if canDisable:
         ed._buttons[name] = b
     return b
+
 
 def add_code_langs_combobox(self, func, previous_lang):
     combo = QComboBox()
     combo.addItem(previous_lang)
     for lang in sorted(LANGUAGES_MAP.keys()):
         combo.addItem(lang)
-        
+
     combo.activated[str].connect(func)
     self.addWidget(combo)
     return combo
+
 
 icon_path = os.path.join(addon_path, "icons", "button.png")
 
 QSplitter.add_plugin_button_ = add_plugin_button_
 QSplitter.add_code_langs_combobox = add_code_langs_combobox
+
 
 def init_highlighter(ed, *args, **kwargs):
     # If config options have changed, sync with default config first
@@ -244,21 +257,23 @@ def init_highlighter(ed, *args, **kwargs):
     previous_lang = get_default_lang(mw)
     ed.codeHighlightLangAlias = LANGUAGES_MAP[previous_lang]
 
-    ### Add the buttons to the Icon Box
+    # Add the buttons to the Icon Box
     splitter = QSplitter()
     splitter.add_plugin_button_(ed,
-                             "highlight_code",
-                             ed.highlight_code,
-                             key="Alt+s",
-                             text="",
-                             icon=icon_path,
-                             tip=_("Paste highlighted code (Alt+s)"),
-                             check=False)
-    splitter.add_code_langs_combobox(ed.onCodeHighlightLangSelect, previous_lang)
+                                "highlight_code",
+                                ed.highlight_code,
+                                key="Alt+s",
+                                text="",
+                                icon=icon_path,
+                                tip=_("Paste highlighted code (Alt+s)"),
+                                check=False)
+    splitter.add_code_langs_combobox(
+        ed.onCodeHighlightLangSelect, previous_lang)
     splitter.setFrameStyle(QFrame.Plain)
     rect = splitter.frameRect()
-    splitter.setFrameRect(rect.adjusted(10,0,-10,0))
+    splitter.setFrameRect(rect.adjusted(10, 0, -10, 0))
     ed.iconsBox.addWidget(splitter)
+
 
 def onCodeHighlightLangSelect(self, lang):
     set_default_lang(mw, lang)
@@ -267,18 +282,21 @@ def onCodeHighlightLangSelect(self, lang):
 
 ###############################################################
 
+
 # This code sets a correspondence between:
 #  The "language names": long, descriptive names we want
 #   to show the user AND
 #  The "language aliases": short, cryptic names for internal
-#   use by HtmlFormatter 
+#   use by HtmlFormatter
 LANGUAGES_MAP = {}
 for lex in get_all_lexers():
     #  This line uses the somewhat weird structure of the the map
     # returned by get_all_lexers
     LANGUAGES_MAP[lex[0]] = lex[1][0]
-    
+
 ###############################################################
+
+
 def highlight_code(self):
     addon_conf = mw.col.conf['syntax_highlighting_conf']
 
@@ -287,7 +305,7 @@ def highlight_code(self):
     linenos = addon_conf['linenos']
 
     centerfragments = addon_conf['centerfragments']
-    
+
     # Do we want to use css classes or have formatting directly in HTML?
     # Using css classes takes up less space and gives the user more
     # customization options, but is less self-contained as it requires
@@ -305,23 +323,24 @@ def highlight_code(self):
         clipboard = QApplication.clipboard()
         # Get the code from the clipboard
         code = clipboard.text()
-    
+
     langAlias = self.codeHighlightLangAlias
-    
+
     # Select the lexer for the correct language
     my_lexer = get_lexer_by_name(langAlias, stripall=True)
-    
+
     # Create html formatter object including flags for line nums and css classes
-    my_formatter = HtmlFormatter(linenos=linenos, noclasses=noclasses, font_size=16)
+    my_formatter = HtmlFormatter(
+        linenos=linenos, noclasses=noclasses, font_size=16)
 
     if linenos:
-       if centerfragments:
+        if centerfragments:
             pretty_code = "".join(["<center>",
-                                 highlight(code, my_lexer, my_formatter),
-                                 "</center><br>"])
-       else:
+                                   highlight(code, my_lexer, my_formatter),
+                                   "</center><br>"])
+        else:
             pretty_code = "".join([highlight(code, my_lexer, my_formatter),
-                                 "<br>"])
+                                   "<br>"])
     # TODO: understand why this is neccessary
     else:
         if centerfragments:
@@ -337,7 +356,7 @@ def highlight_code(self):
     self.web.eval("document.execCommand('inserthtml', false, %s);"
                   % json.dumps(pretty_code))
 
+
 editor.Editor.onCodeHighlightLangSelect = onCodeHighlightLangSelect
 editor.Editor.highlight_code = highlight_code
 editor.Editor.__init__ = hooks.wrap(editor.Editor.__init__, init_highlighter)
-
