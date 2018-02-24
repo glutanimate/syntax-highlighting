@@ -12,12 +12,9 @@ Copyright: (c) 2012-2015 Tiago Barroso <https://github.com/tmbb>
 License: GNU AGPLv3 <https://www.gnu.org/licenses/agpl.html>
 """
 
-
 from __future__ import unicode_literals
 
-
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from aqt.qt import *
 
 import os
 import sys
@@ -29,14 +26,7 @@ from anki.utils import json
 from anki import hooks
 
 # import the lightning bolt icon
-from resources import *
-
-def debug_trace():
-  '''Set a tracepoint in the Python debugger that works with Qt'''
-  from PyQt4.QtCore import pyqtRemoveInputHook
-  from pdb import set_trace
-  pyqtRemoveInputHook()
-  set_trace()
+from .resources import *
 
 ###############################################################
 ###
@@ -64,9 +54,9 @@ def add_plugin_button_(self,
     b = QPushButton(text)
     
     if check:
-        b.connect(b, SIGNAL("clicked(bool)"), func)
+        b.clicked[bool].connect(func)
     else:
-        b.connect(b, SIGNAL("clicked()"), func)
+        b.clicked.connect(func)
         
     if height:
         b.setFixedHeight(height)
@@ -98,7 +88,7 @@ def add_plugin_button_(self,
 def add_code_langs_combobox(self, func, previous_lang):
     combo = QComboBox()
     combo.addItem(previous_lang)
-    for lang in sorted(LANGUAGES_MAP.iterkeys()):
+    for lang in sorted(LANGUAGES_MAP.keys()):
         combo.addItem(lang)
         
     combo.activated[str].connect(func)
@@ -122,10 +112,10 @@ default_conf = {'linenos': True,  # show numbers by default
 ###############################################################
 
 def sync_keys(tosync, ref):
-    for key in [ x for x in tosync.keys() if x not in ref ]:
+    for key in [ x for x in list(tosync.keys()) if x not in ref ]:
         del(tosync[key])
 
-    for key in [ x for x in ref.keys() if x not in tosync ]:
+    for key in [ x for x in list(ref.keys()) if x not in tosync ]:
         tosync[key] = ref[key]
 
 def sync_config_with_default(col):
@@ -234,9 +224,7 @@ class SyntaxHighlighting_Options(QWidget):
 mw.SyntaxHighlighting_Options = SyntaxHighlighting_Options(mw)
 
 options_action = QAction("Syntax Highlighting Options ...", mw)
-mw.connect(options_action,
-           SIGNAL("triggered()"),
-           mw.SyntaxHighlighting_Options.setupUi)
+options_action.triggered.connect(mw.SyntaxHighlighting_Options.setupUi)
 mw.form.menuTools.addAction(options_action)
 ###############################################################
 
@@ -329,7 +317,7 @@ def highlight_code(self):
         # '\u00A0' (non-breaking space). This character messes with the
         # formatter for highlighted code. To correct this, we replace all
         # '\u00A0' characters with regular space characters
-        code = selected_text.replace(u'\u00A0', ' ')
+        code = selected_text.replace('\u00A0', ' ')
     else:
         clipboard = QApplication.clipboard()
         # Get the code from the clipboard
