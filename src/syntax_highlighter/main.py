@@ -26,8 +26,10 @@ from pygments.lexers import get_lexer_by_name, get_all_lexers
 from pygments.formatters import HtmlFormatter
 
 from aqt.qt import *
-from aqt import mw, editor
+from aqt import mw
+from aqt.editor import Editor
 from anki.utils import json
+from anki.hooks import addHook
 from anki import hooks
 
 ###############################################################
@@ -35,6 +37,9 @@ from anki import hooks
 # Configurable preferences
 ###
 ###############################################################
+
+HOTKEY = "Alt+s"
+
 # Defaults conf
 # - we create a new item in mw.col.conf. This syncs the
 # options across machines (but not on mobile)
@@ -257,28 +262,46 @@ def init_highlighter(ed, *args, **kwargs):
     previous_lang = get_default_lang(mw)
     ed.codeHighlightLangAlias = LANGUAGES_MAP[previous_lang]
 
-    # Add the buttons to the Icon Box
-    splitter = QSplitter()
-    splitter.add_plugin_button_(ed,
-                                "highlight_code",
-                                ed.highlight_code,
-                                key="Alt+s",
-                                text="",
-                                icon=icon_path,
-                                tip=_("Paste highlighted code (Alt+s)"),
-                                check=False)
-    splitter.add_code_langs_combobox(
-        ed.onCodeHighlightLangSelect, previous_lang)
-    splitter.setFrameStyle(QFrame.Plain)
-    rect = splitter.frameRect()
-    splitter.setFrameRect(rect.adjusted(10, 0, -10, 0))
-    ed.iconsBox.addWidget(splitter)
+    if anki21:
+        # TODO: Anki 2.1 no longer uses a Qt widget for its buttons. We will have to migrate
+        # to an HTML-based solution here
+        pass
+    else:
+        # Add the buttons to the Icon Box
+        splitter = QSplitter()
+        splitter.add_plugin_button_(ed,
+                                    "highlight_code",
+                                    lambda _: highlight_code(ed),
+                                    key=HOTKEY,
+                                    text="",
+                                    icon=icon_path,
+                                    tip=_("Paste highlighted code ({})".format(HOTKEY)),
+                                    check=False)
+        splitter.add_code_langs_combobox(
+            lambda lang: onCodeHighlightLangSelect(ed, lang), previous_lang)
+        splitter.setFrameStyle(QFrame.Plain)
+        rect = splitter.frameRect()
+        splitter.setFrameRect(rect.adjusted(10, 0, -10, 0))
+        ed.iconsBox.addWidget(splitter)
 
 
-def onCodeHighlightLangSelect(self, lang):
+def onCodeHighlightLangSelect(ed, lang):
     set_default_lang(mw, lang)
     alias = LANGUAGES_MAP[lang]
-    self.codeHighlightLangAlias = alias
+    ed.codeHighlightLangAlias = alias
+
+
+def onSetupButtons21(buttons, editor):
+    """Add buttons to Editor for Anki 2.1.x"""
+    # no need for a lambda since onBridgeCmd passes current editor instance
+    # to method anyway (cf. "self._links[cmd](self)")
+    b = editor.addButton(icon_path, "CH", highlight_code,
+                         tip="Paste highlighted code ({})".format(HOTKEY),
+                         keys=HOTKEY)
+    buttons.append(b)
+    return buttons
+
+
 
 ###############################################################
 
@@ -356,7 +379,6 @@ def highlight_code(self):
     self.web.eval("document.execCommand('inserthtml', false, %s);"
                   % json.dumps(pretty_code))
 
-
-editor.Editor.onCodeHighlightLangSelect = onCodeHighlightLangSelect
-editor.Editor.highlight_code = highlight_code
-editor.Editor.__init__ = hooks.wrap(editor.Editor.__init__, init_highlighter)
+if anki21:
+    addHook("setupEditorButtons", onSetupButtons21)
+Editor.__init__ = hooks.wrap(Editor.__init__, init_highlighter)
