@@ -291,6 +291,7 @@ def onCodeHighlightLangSelect(ed, lang):
     ed.codeHighlightLangAlias = alias
 
 
+
 def onSetupButtons21(buttons, editor):
     """Add buttons to Editor for Anki 2.1.x"""
     # no need for a lambda since onBridgeCmd passes current editor instance
@@ -299,6 +300,22 @@ def onSetupButtons21(buttons, editor):
                          tip="Paste highlighted code ({})".format(HOTKEY),
                          keys=HOTKEY)
     buttons.append(b)
+
+    # HTML "combobox"
+
+    frame_str = """<select class=blabel>{}</select>"""
+    option_str = """<option value="{}">{}</option>"""
+    
+    previous_lang = get_default_lang(mw)
+
+    options = []
+    options.append(option_str.format(previous_lang, previous_lang))
+    for lang in sorted(LANGUAGES_MAP.keys()):
+        options.append(option_str.format(lang, lang))
+
+    combo = frame_str.format("".join(options))
+
+    buttons.append(combo)
     return buttons
 
 
