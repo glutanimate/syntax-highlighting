@@ -24,66 +24,34 @@ sys.path.insert(0, os.path.join(addon_path, "libs"))
 from pygments import highlight
 from pygments.lexers import get_lexer_by_name, get_all_lexers
 from pygments.formatters import HtmlFormatter
+from pygments.util import ClassNotFound
 
 from aqt.qt import *
 from aqt import mw
 from aqt.editor import Editor
+from aqt.utils import tooltip
 from anki.utils import json
 from anki.hooks import addHook, wrap
 
-###############################################################
-###
-# Configurable preferences
-###
-###############################################################
+from .config import local_conf
 
-HOTKEY = "Alt+s"
 
-# Defaults conf
-# - we create a new item in mw.col.conf. This syncs the
-# options across machines (but not on mobile)
-default_conf = {'linenos': True,  # show numbers by default
-                'centerfragments': True,  # Use <center> when generating code fragments
-                'cssclasses': False,  # Use css classes instead of colors directly in html
-                'defaultlangperdeck': True,  # Default to last used language per deck
-                'deckdefaultlang': {},  # Map to store the default language per deck
-                'lang': 'Python'}  # default language is Python
-###############################################################
-
+HOTKEY = local_conf["hotkey"]
+LIMITED_LANGS = local_conf["limitToLangs"]
 
 # This code sets a correspondence between:
 #  The "language names": long, descriptive names we want
-#   to show the user AND
+#                        to show the user AND
 #  The "language aliases": short, cryptic names for internal
-#   use by HtmlFormatter
-LANGUAGES_MAP = {}
-for lex in get_all_lexers():
-    #  This line uses the somewhat weird structure of the the map
-    # returned by get_all_lexers
-    LANGUAGES_MAP[lex[0]] = lex[1][0]
+#                          use by HtmlFormatter
+LANGUAGES_MAP = {lex[0]: lex[1][0] for lex in get_all_lexers()}
 
+
+ERR_LEXER = ("<b>Error</b>: Selected language not found.<br>"
+            "If you set a custom lang selection please make sure<br>"
+            "you typed all list entries correctly.")
 
 # Synced options and corresponding dialogs
-
-def sync_keys(tosync, ref):
-    for key in [x for x in list(tosync.keys()) if x not in ref]:
-        del(tosync[key])
-
-    for key in [x for x in list(ref.keys()) if x not in tosync]:
-        tosync[key] = ref[key]
-
-
-def sync_config_with_default(col):
-    if not 'syntax_highlighting_conf' in col.conf:
-        col.conf['syntax_highlighting_conf'] = default_conf
-    else:
-        sync_keys(col.conf['syntax_highlighting_conf'], default_conf)
-
-    # Mark collection state as modified, else config changes get lost unless
-    # some unrelated action triggers the flush of collection data to db
-    col.setMod()
-    # col.flush()
-
 
 def get_deck_name(mw):
     deck_name = None
@@ -138,9 +106,6 @@ class SyntaxHighlightingOptions(QDialog):
         self.addon_conf['cssclasses'] = not cssclasses_
 
     def setupUi(self):
-        # If config options have changed, sync with default config first
-        sync_config_with_default(self.mw.col)
-
         self.addon_conf = self.mw.col.conf['syntax_highlighting_conf']
 
         linenos_label = QLabel('<b>Line numbers</b>')
@@ -187,6 +152,7 @@ def onOptionsCall(mw):
     dialog = SyntaxHighlightingOptions(mw)
     dialog.exec_()
 
+
 options_action = QAction("Syntax Highlighting Options ...", mw)
 options_action.triggered.connect(lambda _, o=mw: onOptionsCall(o))
 mw.form.menuTools.addAction(options_action)
@@ -196,13 +162,10 @@ mw.form.menuTools.addAction(options_action)
 
 
 def init_highlighter(ed, *args, **kwargs):
-    # If config options have changed, sync with default config first
-    sync_config_with_default(mw.col)
-
     # Get the last selected language (or the default language if the user
     # has never chosen any)
     previous_lang = get_default_lang(mw)
-    ed.codeHighlightLangAlias = LANGUAGES_MAP[previous_lang]
+    ed.codeHighlightLangAlias = LANGUAGES_MAP.get(previous_lang, "")
 
     if not anki21:
         addWidgets20(ed, previous_lang)
@@ -270,7 +233,13 @@ def add_plugin_button_(self,
 def add_code_langs_combobox(self, func, previous_lang):
     combo = QComboBox()
     combo.addItem(previous_lang)
-    for lang in sorted(LANGUAGES_MAP.keys()):
+    
+    if LIMITED_LANGS:
+        selection = LIMITED_LANGS
+    else:
+        selection = sorted(LANGUAGES_MAP.keys())
+    
+    for lang in selection:
         combo.addItem(lang)
 
     combo.activated[str].connect(func)
@@ -302,8 +271,13 @@ def addWidgets20(ed, previous_lang):
 
 
 def onCodeHighlightLangSelect(ed, lang):
+    try:
+        alias = LANGUAGES_MAP[lang]
+    except KeyError:
+        tooltip(ERR_LEXER)
+        ed.codeHighlightLangAlias = ""
+        return False
     set_default_lang(mw, lang)
-    alias = LANGUAGES_MAP[lang]
     ed.codeHighlightLangAlias = alias
 
 
@@ -312,6 +286,7 @@ def onCodeHighlightLangSelect(ed, lang):
 select_elm = ("""<select onchange='pycmd("shLang:" +"""
               """ this.selectedOptions[0].text)' """
               """style='vertical-align: top;'>{}</select>""")
+
 
 def onSetupButtons21(buttons, editor):
     """Add buttons to Editor for Anki 2.1.x"""
@@ -327,14 +302,19 @@ def onSetupButtons21(buttons, editor):
 
     option_str = """<option>{}</option>"""
     options = []
-    
+
+    if LIMITED_LANGS:
+        selection = LIMITED_LANGS
+    else:
+        selection = sorted(LANGUAGES_MAP.keys())
+
     options.append(option_str.format(previous_lang))
-    for lang in sorted(LANGUAGES_MAP.keys()):
+    for lang in selection:
         options.append(option_str.format(lang))
 
     combo = select_elm.format("".join(options))
     buttons.append(combo)
-    
+
     return buttons
 
 
@@ -378,7 +358,11 @@ def highlight_code(self):
     langAlias = self.codeHighlightLangAlias
 
     # Select the lexer for the correct language
-    my_lexer = get_lexer_by_name(langAlias, stripall=True)
+    try:
+        my_lexer = get_lexer_by_name(langAlias, stripall=True)
+    except ClassNotFound:
+        tooltip(ERR_LEXER)
+        return False
 
     # Create html formatter object including flags for line nums and css classes
     my_formatter = HtmlFormatter(
