@@ -11,10 +11,10 @@ Initial tests have shown this add-on to both work on Anki 2.0 and Anki 2.1. Howe
 
 **RELEASE LOG**
 
-- 2018-02-??: **v2.0.0** - Initial release of this fork
+- 2018-02-??: **v2.0.0** – Initial release of this fork
 - 2015-12-25: CSS class option implemented by Tim Rae
 - 2015-11-20: Last updated release of the original add-on on AnkiWeb
-- 2012: **v1.0.0?** – Initial release by Tiago Barroso
+- 2012: **v1.0.0**? – Initial release by Tiago Barroso
 
 **LATEST CHANGES AND NEWS**
 
@@ -86,7 +86,7 @@ Please **do not report issues or bugs in the review section below**. I can't rep
 
 *Copyright © 2018 [Aristotelis P.](https://glutanimate.com/)*
 
-*Syntax Highlighting* is based on [*Syntax Highlighting for Code*](https://github.com/tmbb/SyntaxHighlight) by [Tiago Barroso](https://github.com/tmbb). All credit for the original add-on goes to him. A major thanks is also due to [Tim Rae](https://github.com/timrae), who extended the original add-on with CSS support.
+*Syntax Highlighting* is based on [*Syntax Highlighting for Code*](https://github.com/tmbb/SyntaxHighlight) by [Tiago Barroso](https://github.com/tmbb). All credit for the original idea and implementation goes to him. A major thanks is also due to [Tim Rae](https://github.com/timrae), who extended the original add-on with CSS support.
 
 The present fork and update to Anki 2.1 was made possible through the generous support of a fellow Anki user who would like to remain anonymous.
 
