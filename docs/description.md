@@ -14,21 +14,24 @@ Initial tests have shown this add-on to both work on Anki 2.0 and Anki 2.1. Howe
 - 2018-02-??: **v2.0.0** - Initial release of this fork
 - 2015-12-25: CSS class option implemented by Tim Rae
 - 2015-11-20: Last updated release of the original add-on on AnkiWeb
-- 2012: **v1.0.0?** – Initial release
+- 2012: **v1.0.0?** – Initial release by Tiago Barroso
 
 **LATEST CHANGES AND NEWS**
 
-*2018-02-??*
+*2018-02-??* **v2.0.0**
 
-Thanks to the generous support of a fellow Anki user I was finally able to update and port this add-on to Anki 2.1. Aside from Anki 2.1 support, the current revision of this add-on also comes with the following changes:
+This is the first public release of my fork of Tiago Barroso's *Syntax Highlighting for Code* add-on. I would like to extend my heartfelt gratitude to all of what he has done for the Anki community over the years.
 
-**v2.0.0**
+This update is meant to carry on his legacy by adding Anki 2.1 support, implementing some long-requested features, and refactoring major parts of the codebase. All of this was made possible through the generous support of a fellow Anki user who would like to remain anonymous.
 
-- **New**: Option to apply syntax highlighting via CSS
-- **New**: Customize list of available languages and highlighter hotkey
-- **New**: Upgraded to pygments v2.2.0 from v1.6. This is a pretty major jump as you can see from [the changelogs](http://pygments.org/docs/changelog/#version-2-2-0) and should come with a lot of added functionality in terms of supported languages and language features
-- **Fixed**: Various bugs and error messages of the previous version
-- **Fixed**: Options dialog is positioned correctly now
+An overview of the most important changes in this release follows below:
+
+- **New**: Anki 2.1 compatibility
+- **New**: Option to apply syntax highlighting via CSS (thanks to [Tim Rae](https://github.com/timrae/SyntaxHighlight)!)
+- **New**: Ability to customize language selection and hotkey
+- **New**: Upgraded pygments from v1.6 to v2.2.0. This is a [major jump](http://pygments.org/docs/changelog/#version-2-2-0) and should come with a lot of added functionality in terms of supported languages and language features
+- **Fixed**: Position options dialog correctly
+- **Fixed**: Various improvements and bug fixes (e.g. the ImportErrors and KeyErrors frequently reported in earlier reviews)
 
 **USAGE**
 
