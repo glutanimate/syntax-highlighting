@@ -11,10 +11,10 @@ Initial tests have shown this add-on to both work on Anki 2.0 and Anki 2.1. Howe
 
 **RELEASE LOG**
 
-- 2018-02-??: Initial release of this fork
+- 2018-02-??: **v2.0.0** - Initial release of this fork
 - 2015-12-25: CSS class option implemented by Tim Rae
 - 2015-11-20: Last updated release of the original add-on on AnkiWeb
-- 2012: Initial release
+- 2012: **v1.0.0?** – Initial release
 
 **LATEST CHANGES AND NEWS**
 
@@ -22,9 +22,13 @@ Initial tests have shown this add-on to both work on Anki 2.0 and Anki 2.1. Howe
 
 Thanks to the generous support of a fellow Anki user I was finally able to update and port this add-on to Anki 2.1. Aside from Anki 2.1 support, the current revision of this add-on also comes with the following changes:
 
+**v2.0.0**
+
 - **New**: Option to apply syntax highlighting via CSS
+- **New**: Customize list of available languages and highlighter hotkey
+- **New**: Upgraded to pygments v2.2.0 from v1.6. This is a pretty major jump as you can see from [the changelogs](http://pygments.org/docs/changelog/#version-2-2-0) and should come with a lot of added functionality in terms of supported languages and language features
 - **Fixed**: Various bugs and error messages of the previous version
-- 
+- **Fixed**: Options dialog is positioned correctly now
 
 **USAGE**
 
@@ -42,19 +46,30 @@ The add-on will automatically remember the last programming language you chose, 
 
 **CONFIGURATION**
 
+**Basic**
+
 Currently there are four configuration options, available from Anki's main screen through *Tools* → *Syntax Highlighting Options*:
 
 - **Line numbers** (default: true): Whether or not to include line numbers in the highlighted code
 - **Center code fragments** (default: true): Whether or not to automatically center the code in the field
 - **Use CSS classes** (default: false): Whether or not to use CSS classes instead of inline styles for syntax highlighting.
 
-    Using css classes allows you more customization, and results in a smaller database size, but you'll need to manually include a styling sheet in every note type, so it's only recommended for advanced users. You will find some default CSS code that you can include in your templates on [GitHub](https://github.com/glutanimate/syntax-highlighting/blob/master/docs/css.md).
+    Using css classes allows you more customization, and results in a smaller database size, but you'll need to manually include a styling sheet in every note type, so it's only recommended for advanced users. You will find a selection of CSS styles that you can include in your card templates in the [documentation on GitHub](https://github.com/glutanimate/syntax-highlighting/blob/master/docs/css.md).
 
 - **Default to last language used per deck** (default: true): Whether or not to remember the last programming language for each deck individually
 
 Please note that changes in the configuration will only affect new notes.
 
+**Advanced**
 
+*Syntax Highlighting* also comes with a number of advanced options. These can be edited by either using Anki 2.1's inbuilt add-on configuration screen (*Tools* → *Add-ons* → select *Syntax Highlighting* → click on *Config*) or by manually editing the corresponding config keys in `syntax_highlighting/meta.json` in Anki's add-on folder (Anki 2.0) [the config.json file contains the default values and **should not be modified**.]
+
+The following options may be customized:
+
+- `hotkey` [string]: Add-on invocation hotkey. Default: `Alt+S`
+- `limitToLags` [list]: List of programming languages to limit combobox menu to. Default: `[]` (i.e. no limit). Example: `["Python", "Java", "JavaScript"]`.
+
+These advanced settings do not sync and require a restart to apply.
 
 **SUPPORT**
 
