@@ -1,4 +1,4 @@
-### CSS Templates for Code Syntax Highlighter
+### CSS Templates for Syntax Highlighting
 
 #### Important Notes
 

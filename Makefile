@@ -6,8 +6,8 @@
 # License: GNU AGPLv3 <https://www.gnu.org/licenses/agpl.html>
 
 VERSION = `git describe HEAD --tags --abbrev=0`
-ADDON = syntax-highlighter
-ADDONDIR = syntax_highlighter
+ADDON = syntax-highlighting
+ADDONDIR = syntax_highlighting
 
 
 ###

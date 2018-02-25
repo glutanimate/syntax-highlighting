@@ -3,11 +3,11 @@ Allows you to insert **syntax-highlighted code snippets** into your notes.
 
 **SCREENSHOT**
 
-![](https://raw.githubusercontent.com/glutanimate/syntax-highlighter/master/screenshots/screenshot_python.png)
+![](https://raw.githubusercontent.com/glutanimate/syntax-highlighting/master/screenshots/screenshot_python.png)
 
 **COMPATIBILITY**
 
-Initial tests have shown this add-on to both work on Anki 2.0 and Anki 2.1. However, as the Anki 2.1 release line is still in beta, I cannot provide any kind of official support for this platform. **Please do not report issues with Anki 2.1 in the review section below**. Instead, please report all issues you encounter on [GitHub](https://github.com/glutanimate/syntax-highlighter/issues).
+Initial tests have shown this add-on to both work on Anki 2.0 and Anki 2.1. However, as the Anki 2.1 release line is still in beta, I cannot provide any kind of official support for this platform. **Please do not report issues with Anki 2.1 in the review section below**. Instead, please report all issues you encounter on [GitHub](https://github.com/glutanimate/syntax-highlighting/issues).
 
 **RELEASE LOG**
 
@@ -48,7 +48,7 @@ Currently there are four configuration options, available from Anki's main scree
 - **Center code fragments** (default: true): Whether or not to automatically center the code in the field
 - **Use CSS classes** (default: false): Whether or not to use CSS classes instead of inline styles for syntax highlighting.
 
-    Using css classes allows you more customization, and results in a smaller database size, but you'll need to manually include a styling sheet in every note type, so it's only recommended for advanced users. You will find some default CSS code that you can include in your templates on [GitHub](https://github.com/glutanimate/syntax-highlighter/blob/master/docs/css.md).
+    Using css classes allows you more customization, and results in a smaller database size, but you'll need to manually include a styling sheet in every note type, so it's only recommended for advanced users. You will find some default CSS code that you can include in your templates on [GitHub](https://github.com/glutanimate/syntax-highlighting/blob/master/docs/css.md).
 
 - **Default to last language used per deck** (default: true): Whether or not to remember the last programming language for each deck individually
 
@@ -58,7 +58,7 @@ Please note that changes in the configuration will only affect new notes.
 
 **SUPPORT**
 
-Please **do not report issues or bugs in the review section below**. I can't reply to your reviews, so there is no way for me to help you. Instead, please report all issues you encounter either by creating a bug report on [GitHub](https://github.com/glutanimate/syntax-highlighter/issues), or by posting a new thread on the [Anki add-on support forums](https://anki.tenderapp.com/discussions/add-ons). Please make sure to include the name of the affected add-on in your report title when you do so.
+Please **do not report issues or bugs in the review section below**. I can't reply to your reviews, so there is no way for me to help you. Instead, please report all issues you encounter either by creating a bug report on [GitHub](https://github.com/glutanimate/syntax-highlighting/issues), or by posting a new thread on the [Anki add-on support forums](https://anki.tenderapp.com/discussions/add-ons). Please make sure to include the name of the affected add-on in your report title when you do so.
 
 **CREDITS AND LICENSE**
 
@@ -68,11 +68,11 @@ Please **do not report issues or bugs in the review section below**. I can't rep
 
 *Copyright © 2018 [Aristotelis P.](https://glutanimate.com/)*
 
-*Code Syntax Highlighter* is based on [*Syntax Highlighting for Code*](https://github.com/tmbb/SyntaxHighlight) by [Tiago Barroso](https://github.com/tmbb). All credit for the original add-on goes to him. A major thanks is also due to [Tim Rae](https://github.com/timrae), who extended the original add-on with CSS support.
+*Syntax Highlighting* is based on [*Syntax Highlighting for Code*](https://github.com/tmbb/SyntaxHighlight) by [Tiago Barroso](https://github.com/tmbb). All credit for the original add-on goes to him. A major thanks is also due to [Tim Rae](https://github.com/timrae), who extended the original add-on with CSS support.
 
 The present fork and update to Anki 2.1 was made possible through the generous support of a fellow Anki user who would like to remain anonymous.
 
-Licensed under the [GNU AGPLv3](https://www.gnu.org/licenses/agpl.html). The code for this add-on is available on [![GitHub icon](https://glutanimate.com/logos/github.svg) GitHub](https://github.com/glutanimate/syntax-highlighter). For more information on the licensing terms and other software shipped with this package please check out the [README](https://github.com/glutanimate/syntax-highlighter#credits).
+Licensed under the [GNU AGPLv3](https://www.gnu.org/licenses/agpl.html). The code for this add-on is available on [![GitHub icon](https://glutanimate.com/logos/github.svg) GitHub](https://github.com/glutanimate/syntax-highlighting). For more information on the licensing terms and other software shipped with this package please check out the [README](https://github.com/glutanimate/syntax-highlighting#credits).
 
 **MORE RESOURCES**
 

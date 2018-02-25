@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-This file is part of the Code Syntax Highlighter add-on for Anki.
+This file is part of the Syntax Highlighting add-on for Anki.
 
 Main Module, hooks add-on methods into Anki.
 

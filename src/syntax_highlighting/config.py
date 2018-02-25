@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-This file is part of the Code Syntax Highlighter add-on for Anki.
+This file is part of the Syntax Highlighting add-on for Anki.
 
 Configuration shim between Anki 2.0 and Anki 2.1
 
