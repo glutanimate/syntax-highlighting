@@ -17,7 +17,7 @@ from __future__ import unicode_literals
 import os
 import sys
 
-from .consts import *
+from .consts import *  # import addon_path
 # always use shipped pygments library
 sys.path.insert(0, os.path.join(addon_path, "libs"))
 
@@ -50,6 +50,20 @@ default_conf = {'linenos': True,  # show numbers by default
                 'lang': 'Python'}  # default language is Python
 ###############################################################
 
+
+# This code sets a correspondence between:
+#  The "language names": long, descriptive names we want
+#   to show the user AND
+#  The "language aliases": short, cryptic names for internal
+#   use by HtmlFormatter
+LANGUAGES_MAP = {}
+for lex in get_all_lexers():
+    #  This line uses the somewhat weird structure of the the map
+    # returned by get_all_lexers
+    LANGUAGES_MAP[lex[0]] = lex[1][0]
+
+
+# Synced options and corresponding dialogs
 
 def sync_keys(tosync, ref):
     for key in [x for x in list(tosync.keys()) if x not in ref]:
@@ -178,18 +192,33 @@ options_action.triggered.connect(lambda _, o=mw: onOptionsCall(o))
 mw.form.menuTools.addAction(options_action)
 
 
-###############################################################
-###
-# Utilities to generate buttons
-###
-###############################################################
+# Highlighter initialization
 
+
+def init_highlighter(ed, *args, **kwargs):
+    # If config options have changed, sync with default config first
+    sync_config_with_default(mw.col)
+
+    # Get the last selected language (or the default language if the user
+    # has never chosen any)
+    previous_lang = get_default_lang(mw)
+    ed.codeHighlightLangAlias = LANGUAGES_MAP[previous_lang]
+
+    if not anki21:
+        addWidgets20(ed, previous_lang)
+
+
+# Highlighter widgets
+
+# button icon
 standardHeight = 20
 standardWidth = 20
+icon_path = os.path.join(addon_path, "icons", "button.png")
 
-# This is taken from the aqt source code to
 
+# Editor widgets in Anki 2.0
 
+# This is taken from the aqt source code
 def add_plugin_button_(self,
                        ed,
                        name,
@@ -249,42 +278,27 @@ def add_code_langs_combobox(self, func, previous_lang):
     return combo
 
 
-icon_path = os.path.join(addon_path, "icons", "button.png")
-
 QSplitter.add_plugin_button_ = add_plugin_button_
 QSplitter.add_code_langs_combobox = add_code_langs_combobox
 
 
-def init_highlighter(ed, *args, **kwargs):
-    # If config options have changed, sync with default config first
-    sync_config_with_default(mw.col)
-
-    #  Get the last selected language (or the default language if the user
-    # has never chosen any)
-    previous_lang = get_default_lang(mw)
-    ed.codeHighlightLangAlias = LANGUAGES_MAP[previous_lang]
-
-    if anki21:
-        # TODO: Anki 2.1 no longer uses a Qt widget for its buttons. We will have to migrate
-        # to an HTML-based solution here
-        pass
-    else:
-        # Add the buttons to the Icon Box
-        splitter = QSplitter()
-        splitter.add_plugin_button_(ed,
-                                    "highlight_code",
-                                    lambda _: highlight_code(ed),
-                                    key=HOTKEY,
-                                    text="",
-                                    icon=icon_path,
-                                    tip=_("Paste highlighted code ({})".format(HOTKEY)),
-                                    check=False)
-        splitter.add_code_langs_combobox(
-            lambda lang: onCodeHighlightLangSelect(ed, lang), previous_lang)
-        splitter.setFrameStyle(QFrame.Plain)
-        rect = splitter.frameRect()
-        splitter.setFrameRect(rect.adjusted(10, 0, -10, 0))
-        ed.iconsBox.addWidget(splitter)
+def addWidgets20(ed, previous_lang):
+    # Add the buttons to the Icon Box
+    splitter = QSplitter()
+    splitter.add_plugin_button_(ed,
+                                "highlight_code",
+                                lambda _: highlight_code(ed),
+                                key=HOTKEY,
+                                text="",
+                                icon=icon_path,
+                                tip=_("Paste highlighted code ({})".format(HOTKEY)),
+                                check=False)
+    splitter.add_code_langs_combobox(
+        lambda lang: onCodeHighlightLangSelect(ed, lang), previous_lang)
+    splitter.setFrameStyle(QFrame.Plain)
+    rect = splitter.frameRect()
+    splitter.setFrameRect(rect.adjusted(10, 0, -10, 0))
+    ed.iconsBox.addWidget(splitter)
 
 
 def onCodeHighlightLangSelect(ed, lang):
@@ -292,6 +306,8 @@ def onCodeHighlightLangSelect(ed, lang):
     alias = LANGUAGES_MAP[lang]
     ed.codeHighlightLangAlias = alias
 
+
+# Editor widgets in Anki 2.1
 
 select_elm = ("""<select onchange='pycmd("shLang:" +"""
               """ this.selectedOptions[0].text)' """
@@ -329,21 +345,7 @@ def onBridgeCmd(self, cmd, _old):
     onCodeHighlightLangSelect(self, lang)
 
 
-###############################################################
-
-
-# This code sets a correspondence between:
-#  The "language names": long, descriptive names we want
-#   to show the user AND
-#  The "language aliases": short, cryptic names for internal
-#   use by HtmlFormatter
-LANGUAGES_MAP = {}
-for lex in get_all_lexers():
-    #  This line uses the somewhat weird structure of the the map
-    # returned by get_all_lexers
-    LANGUAGES_MAP[lex[0]] = lex[1][0]
-
-###############################################################
+# Actual code highlighting
 
 
 def highlight_code(self):
@@ -404,6 +406,9 @@ def highlight_code(self):
     # These two lines insert a piece of HTML in the current cursor position
     self.web.eval("document.execCommand('inserthtml', false, %s);"
                   % json.dumps(pretty_code))
+
+
+# Hooks and monkey-patches
 
 if anki21:
     addHook("setupEditorButtons", onSetupButtons21)
