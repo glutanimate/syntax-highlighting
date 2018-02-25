@@ -100,11 +100,12 @@ def set_default_lang(mw, lang):
             addon_conf['deckdefaultlang'][deck_name] = lang
 
 
-class SyntaxHighlighting_Options(QWidget):
+class SyntaxHighlightingOptions(QDialog):
     def __init__(self, mw):
-        super(SyntaxHighlighting_Options, self).__init__()
+        super(SyntaxHighlightingOptions, self).__init__()
         self.mw = mw
         self.addon_conf = None
+        self.setupUi()
 
     def switch_linenos(self):
         linenos_ = self.addon_conf['linenos']
@@ -165,13 +166,15 @@ class SyntaxHighlighting_Options(QWidget):
         self.setLayout(grid)
 
         self.setWindowTitle('Syntax Highlighting Options')
-        self.show()
 
 
-mw.SyntaxHighlighting_Options = SyntaxHighlighting_Options(mw)
+def onOptionsCall(mw):
+    """Call settings dialog"""
+    dialog = SyntaxHighlightingOptions(mw)
+    dialog.exec_()
 
 options_action = QAction("Syntax Highlighting Options ...", mw)
-options_action.triggered.connect(mw.SyntaxHighlighting_Options.setupUi)
+options_action.triggered.connect(lambda _, o=mw: onOptionsCall(o))
 mw.form.menuTools.addAction(options_action)
 
 
