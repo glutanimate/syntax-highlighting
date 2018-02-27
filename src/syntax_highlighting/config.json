@@ -1,4 +1,5 @@
 {
     "hotkey": "Alt+s",
-    "limitToLangs": []
+    "limitToLangs": [],
+    "style": "default"
 }

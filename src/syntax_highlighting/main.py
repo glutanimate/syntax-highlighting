@@ -29,7 +29,7 @@ from pygments.util import ClassNotFound
 from aqt.qt import *
 from aqt import mw
 from aqt.editor import Editor
-from aqt.utils import tooltip
+from aqt.utils import showWarning
 from anki.utils import json
 from anki.hooks import addHook, wrap
 
@@ -37,6 +37,7 @@ from .config import local_conf
 
 
 HOTKEY = local_conf["hotkey"]
+STYLE = local_conf["style"]
 LIMITED_LANGS = local_conf["limitToLangs"]
 
 # This code sets a correspondence between:
@@ -50,6 +51,16 @@ LANGUAGES_MAP = {lex[0]: lex[1][0] for lex in get_all_lexers()}
 ERR_LEXER = ("<b>Error</b>: Selected language not found.<br>"
             "If you set a custom lang selection please make sure<br>"
             "you typed all list entries correctly.")
+
+ERR_STYLE = ("<b>Error</b>: Selected style not found.<br>"
+            "If you set a custom style please make sure<br>"
+            "you typed it correctly.")
+
+
+# Misc
+
+def showError(msg, parent):
+    showWarning(msg, title="Syntax Highlighting Error", parent=parent)
 
 # Synced options and corresponding dialogs
 
@@ -273,8 +284,9 @@ def addWidgets20(ed, previous_lang):
 def onCodeHighlightLangSelect(ed, lang):
     try:
         alias = LANGUAGES_MAP[lang]
-    except KeyError:
-        tooltip(ERR_LEXER)
+    except KeyError as e:
+        print(e)
+        showError(ERR_LEXER, parent=ed.parentWindow)
         ed.codeHighlightLangAlias = ""
         return False
     set_default_lang(mw, lang)
@@ -288,11 +300,11 @@ select_elm = ("""<select onchange='pycmd("shLang:" +"""
               """style='vertical-align: top;'>{}</select>""")
 
 
-def onSetupButtons21(buttons, editor):
+def onSetupButtons21(buttons, ed):
     """Add buttons to Editor for Anki 2.1.x"""
     # no need for a lambda since onBridgeCmd passes current editor instance
     # to method anyway (cf. "self._links[cmd](self)")
-    b = editor.addButton(icon_path, "CH", highlight_code,
+    b = ed.addButton(icon_path, "CH", highlight_code,
                          tip="Paste highlighted code ({})".format(HOTKEY),
                          keys=HOTKEY)
     buttons.append(b)
@@ -318,17 +330,17 @@ def onSetupButtons21(buttons, editor):
     return buttons
 
 
-def onBridgeCmd(self, cmd, _old):
+def onBridgeCmd(ed, cmd, _old):
     if not cmd.startswith("shLang"):
-        return _old(self, cmd)
+        return _old(ed, cmd)
     (type, lang) = cmd.split(":")
-    onCodeHighlightLangSelect(self, lang)
+    onCodeHighlightLangSelect(ed, lang)
 
 
 # Actual code highlighting
 
 
-def highlight_code(self):
+def highlight_code(ed):
     addon_conf = mw.col.conf['syntax_highlighting_conf']
 
     #  Do we want line numbers? linenos is either true or false according
@@ -343,7 +355,7 @@ def highlight_code(self):
     # setting the styling on every note type where code is used
     noclasses = not addon_conf['cssclasses']
 
-    selected_text = self.web.selectedText()
+    selected_text = ed.web.selectedText()
     if selected_text:
         #  Sometimes, self.web.selectedText() contains the unicode character
         # '\u00A0' (non-breaking space). This character messes with the
@@ -355,18 +367,25 @@ def highlight_code(self):
         # Get the code from the clipboard
         code = clipboard.text()
 
-    langAlias = self.codeHighlightLangAlias
+    langAlias = ed.codeHighlightLangAlias
 
     # Select the lexer for the correct language
     try:
         my_lexer = get_lexer_by_name(langAlias, stripall=True)
-    except ClassNotFound:
-        tooltip(ERR_LEXER)
+    except ClassNotFound as e:
+        print(e)
+        showError(ERR_LEXER, parent=ed.parentWindow)
         return False
 
     # Create html formatter object including flags for line nums and css classes
-    my_formatter = HtmlFormatter(
-        linenos=linenos, noclasses=noclasses, font_size=16)
+    try:
+        my_formatter = HtmlFormatter(
+            linenos=linenos, noclasses=noclasses,
+            font_size=16, style=STYLE)
+    except ClassNotFound as e:
+        print(e)
+        showError(ERR_STYLE, parent=ed.parentWindow)
+        return False
 
     if linenos:
         if centerfragments:
@@ -388,7 +407,7 @@ def highlight_code(self):
                                    "</td></tr></tbody></table><br>"])
 
     # These two lines insert a piece of HTML in the current cursor position
-    self.web.eval("document.execCommand('inserthtml', false, %s);"
+    ed.web.eval("document.execCommand('inserthtml', false, %s);"
                   % json.dumps(pretty_code))
 
 

@@ -29,6 +29,7 @@ An overview of the most important changes in this release follows below:
 - **New**: Anki 2.1 compatibility
 - **New**: Option to apply syntax highlighting via CSS (thanks to [Tim Rae](https://github.com/timrae/SyntaxHighlight)!)
 - **New**: Ability to customize language selection and hotkey
+- **New**: Ability to customize [syntax highlighting theme](https://help.farbox.com/pygments.html)
 - **New**: Upgraded pygments from v1.6 to v2.2.0. This is a [major jump](http://pygments.org/docs/changelog/#version-2-2-0) and should come with a lot of added functionality in terms of supported languages and language features
 - **Fixed**: Position options dialog correctly
 - **Fixed**: Various improvements and bug fixes (e.g. the ImportErrors and KeyErrors frequently reported in earlier reviews)
@@ -71,6 +72,7 @@ The following options may be customized:
 
 - `hotkey` [string]: Add-on invocation hotkey. Default: `Alt+S`
 - `limitToLags` [list]: List of programming languages to limit combobox menu to. Default: `[]` (i.e. no limit). Example: `["Python", "Java", "JavaScript"]`.
+- `style` [string]: Pre-defined [pygments style](https://help.farbox.com/pygments.html) to use for inline styling of code (not applicable to CSS mode). Default: `default`. Example: `monokai`.
 
 These advanced settings do not sync and require a restart to apply.
 
