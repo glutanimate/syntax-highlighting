@@ -18,7 +18,7 @@ This add-on is compatible with Anki 2.0 and 2.1.
 
 **LATEST CHANGES AND NEWS**
 
-*2018-02-??* **v2.0.0**
+*2018-08-16* **v2.0.0**
 
 This is the first public release of my fork of Tiago Barroso's *Syntax Highlighting for Code* add-on. I would like to extend my heartfelt gratitude to all of what he has done for the Anki community over the years.
 
