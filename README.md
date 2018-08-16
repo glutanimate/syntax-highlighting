@@ -1,8 +1,8 @@
-## Syntax Highlighting Add-on for Anki
+## Syntax Highlighting Add-on for Anki <!-- omit in toc -->
 
 Allows you to insert syntax-highlighted code snippets into the spaced-repetition flashcard app [Anki](https://apps.ankiweb.net/).
 
-### Table of Contents
+### Table of Contents <!-- omit in toc -->
 
 <!-- MarkdownTOC -->
 
@@ -40,9 +40,9 @@ Allows you to insert syntax-highlighted code snippets into the spaced-repetition
 1. Go to *Tools* → *Add-ons* → *Open add-ons folder*
 2. See if the `syntax_highlighting` folder already exists
 3. If you would like to keep your settings thus far: Find the `meta.json` file contained within and copy it to a safe location.
-4. Proceed to delete  the `syntax_highlighting` folder
+4. Proceed to delete the `syntax_highlighting` folder
 3. Download and extract the latest Anki 2.1 add-on release from the [releases tab](https://github.com/Glutanimate/syntax-highlighting/releases)
-4. Move the new `syntax_highlighting` folder into the add-ons directory
+4. Rename the extracted folder to `syntax_highlighting` and move it into the add-ons directory
 5. Optional: Place the `meta.json` file back in the directory if you created a copy beforehand.
 5. Restart Anki
 

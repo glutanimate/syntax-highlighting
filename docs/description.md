@@ -7,11 +7,11 @@ Allows you to insert **syntax-highlighted code snippets** into your notes.
 
 **COMPATIBILITY**
 
-Initial tests have shown this add-on to both work on Anki 2.0 and Anki 2.1. However, as the Anki 2.1 release line is still in beta, I cannot provide any kind of official support for this platform. **Please do not report issues with Anki 2.1 in the review section below**. Instead, please report all issues you encounter on [GitHub](https://github.com/glutanimate/syntax-highlighting/issues).
+This add-on is compatible with Anki 2.0 and 2.1.
 
 **RELEASE LOG**
 
-- 2018-02-??: **v2.0.0** – Initial release of this fork
+- 2018-08-16: **v2.0.0** – Initial release of this fork
 - 2015-12-25: CSS class option implemented by Tim Rae
 - 2015-11-20: Last updated release of the original add-on on AnkiWeb
 - 2012: **v1.0.0**? – Initial release by Tiago Barroso
@@ -96,7 +96,7 @@ Licensed under the [GNU AGPLv3](https://www.gnu.org/licenses/agpl.html). The cod
 
 **MORE RESOURCES**
 
-A lot of my add-ons were commissioned by other Anki users. If you enjoy my work and would like to hire my services to work on an add-on or new feature, please feel free to reach out to me at:  ![Email icon](https://glutanimate.com/logos/email.svg) <em>ankiglutanimate [αt] gmail . com</em>
+A lot of my add-ons were commissioned by other Anki users. Please feel free to reach out to me if you would like to hire my services for any Anki-related development work (writing an add-on for you, converting existing ones to Anki 2.1, implementing a specific feature): ![Email icon](https://glutanimate.com/logos/email.svg) <em>ankiglutanimate [αt] gmail .com</em>. 
 
 Want to stay up-to-date with my latest add-on releases and updates? Feel free to follow me on Twitter: [![Twitter bird](https://glutanimate.com/logos/twitter.svg)@Glutanimate](https://twitter.com/glutanimate)
 
