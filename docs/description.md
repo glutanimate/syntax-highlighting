@@ -78,14 +78,12 @@ These advanced settings do not sync and require a restart to apply.
 
 **SUPPORT**
 
-Please **do not report issues or bugs in the review section below**. I can't reply to your reviews, so there is no way for me to help you. Instead, please report all issues you encounter either by creating a bug report on [GitHub](https://github.com/glutanimate/syntax-highlighting/issues), or by posting a new thread on the [Anki add-on support forums](https://anki.tenderapp.com/discussions/add-ons). Please make sure to include the name of the affected add-on in your report title when you do so.
+Please **do not report issues or bugs in the review section below**. I can only reply to your reviews in a limited fashion, so this is not a good way to strike up a dialog and track issues down. Instead, please report all issues you encounter either by creating a bug report on [GitHub](https://github.com/glutanimate/syntax-highlighting/issues), or by posting a new thread on the [Anki add-on support forums](https://anki.tenderapp.com/discussions/add-ons). Please make sure to include the name of the affected add-on in your report title when you do so.
 
 **CREDITS AND LICENSE**
 
 *Copyright © 2012-2015 [Tiago Barroso](https://github.com/tmbb)*
-
 *Copyright © 2015 [Tim Rae](https://github.com/timrae)*
-
 *Copyright © 2018 [Aristotelis P.](https://glutanimate.com/)*
 
 *Syntax Highlighting* is based on [*Syntax Highlighting for Code*](https://github.com/tmbb/SyntaxHighlight) by [Tiago Barroso](https://github.com/tmbb). All credit for the original idea and implementation goes to him. A major thanks is also due to [Tim Rae](https://github.com/timrae), who extended the original add-on with CSS support.
