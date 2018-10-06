@@ -5,12 +5,9 @@ Allows you to insert **syntax-highlighted code snippets** into your notes.
 
 ![](https://raw.githubusercontent.com/glutanimate/syntax-highlighting/master/screenshots/screenshot_python.png)
 
-**COMPATIBILITY**
-
-This add-on is compatible with Anki 2.0 and 2.1.
-
 **RELEASE LOG**
 
+- 2018-10-06: v2.0.1 – Case-insensitive language sorting
 - 2018-08-16: **v2.0.0** – Initial release of this fork
 - 2015-12-25: CSS class option implemented by Tim Rae
 - 2015-11-20: Last updated release of the original add-on on AnkiWeb
@@ -99,3 +96,17 @@ A lot of my add-ons were commissioned by other Anki users. Please feel free to r
 Want to stay up-to-date with my latest add-on releases and updates? Feel free to follow me on Twitter: [![Twitter bird](https://glutanimate.com/logos/twitter.svg)@Glutanimate](https://twitter.com/glutanimate)
 
 New to Anki? Make sure to check out my YouTube channel where I post weekly tutorials on Anki add-ons and related topics: [![YouTube playbutton](https://glutanimate.com/logos/youtube.svg) / Glutanimate](https://www.youtube.com/c/glutanimate)
+
+============================================
+
+**SUPPORT THIS ADD-ON**
+
+Writing, supporting, and maintaining Anki add-ons like these takes a lot of time and effort. If *Syntax Highlighting* has been a valuable asset in your studies, please consider using one of the buttons below to support my efforts by buying me a **coffee**, **sandwich**, **meal**, or anything else you'd like:
+
+![](https://glutanimate.com/logos/paypal.svg)        [![](https://glutanimate.com/logos/contrib_btnsw_coffee.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=4FT9NG3NJMY4U&on0=Project&os0=syntax-highlighting "Buy me a coffee ☺")    [![](https://glutanimate.com/logos/contrib_btnsw_sandwich.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=YKSP7QF45Y7SJ&on0=Project&os0=syntax-highlighting "Buy me a burger 😊")    [![](https://glutanimate.com/logos/contrib_btnsw_meal.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=MVDM6JAL2R5JA&on0=Project&os0=syntax-highlighting "Buy me a meal 😄")    [![](https://glutanimate.com/logos/contrib_btnsw_custom.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=EYNV4ECSKBGE4&on0=Project&os0=syntax-highlighting "Contribute a custom amount ☺")
+
+**New**: I also have a Patreon now! If you would like to support my work while also receiving some exclusive add-ons and other goodies, please do check it out!:
+
+[![](https://glutanimate.com/logos/patreon_button.svg)](https://www.patreon.com/glutanimate "Support me on Patreon 😄")
+
+Each and every contribution is greatly appreciated and will help me maintain and improve *Syntax Highlighting* as time goes by!
