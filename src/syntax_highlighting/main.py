@@ -35,6 +35,11 @@ from anki.hooks import addHook, wrap
 
 from .config import local_conf
 
+if anki21:
+    string = str
+else:
+    import string
+
 
 HOTKEY = local_conf["hotkey"]
 STYLE = local_conf["style"]
@@ -248,7 +253,7 @@ def add_code_langs_combobox(self, func, previous_lang):
     if LIMITED_LANGS:
         selection = LIMITED_LANGS
     else:
-        selection = sorted(LANGUAGES_MAP.keys())
+        selection = sorted(LANGUAGES_MAP.keys(), key=string.lower)
     
     for lang in selection:
         combo.addItem(lang)
@@ -318,7 +323,7 @@ def onSetupButtons21(buttons, ed):
     if LIMITED_LANGS:
         selection = LIMITED_LANGS
     else:
-        selection = sorted(LANGUAGES_MAP.keys())
+        selection = sorted(LANGUAGES_MAP.keys(), key=string.lower)
 
     options.append(option_str.format(previous_lang))
     for lang in selection:
