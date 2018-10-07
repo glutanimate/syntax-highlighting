@@ -16,6 +16,7 @@ from __future__ import unicode_literals
 
 import os
 import sys
+import re
 
 from .consts import *  # import addon_path
 # always use shipped pygments library
@@ -411,10 +412,20 @@ def highlight_code(ed):
                                    highlight(code, my_lexer, my_formatter),
                                    "</td></tr></tbody></table><br>"])
 
+    pretty_code = process_html(pretty_code)
+
     # These two lines insert a piece of HTML in the current cursor position
     ed.web.eval("document.execCommand('inserthtml', false, %s);"
-                  % json.dumps(pretty_code))
+                % json.dumps(pretty_code))
 
+
+def process_html(html):
+    """Modify highlighter output to address some Anki idiosyncracies"""
+    # 1.) "Escape" curly bracket sequences reserved to Anki's card template
+    # system by placing an invisible html tag inbetween
+    html = re.sub(r"{{", "{<!---->{", html)
+    html = re.sub(r"}}", "}<!---->}", html)
+    return html
 
 # Hooks and monkey-patches
 
