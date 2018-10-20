@@ -55,7 +55,9 @@ Currently there are four configuration options, available from Anki's main scree
 - **Center code fragments** (default: true): Whether or not to automatically center the code in the field
 - **Use CSS classes** (default: false): Whether or not to use CSS classes instead of inline styles for syntax highlighting.
 
-    Using css classes allows you more customization, and results in a smaller database size, but you'll need to manually include a styling sheet in every note type, so it's only recommended for advanced users. You will find a selection of CSS styles that you can include in your card templates in the [documentation on GitHub](https://github.com/glutanimate/syntax-highlighting/blob/master/docs/css.md).
+    - Using css classes allows you more customization, and results in a smaller database size, but you'll need to manually adjust the styling, so it's only recommended for advanced users. You will find a selection of CSS styles that you can use in the [documentation on GitHub](https://github.com/glutanimate/syntax-highlighting/blob/master/docs/css.md). 
+    - For proper styling of *reviews* you need to include the relevant CSS styles in the Styling section of the card templates of every note type. At the time of the release of this add-on Anki can load css from an external file in your media folder if you use  a line like `@import url("_styles_for_syntax_highlighting.css");`, for details see [here](https://apps.ankiweb.net/docs/manual.html#media18). But loading css from an external file is not documented in the manual. It might break in the future.
+    - For proper styling of the editor component in the *Add* window and at the bottom of the *Browser* window you need the add-on [Customize Editor Stylesheet](https://ankiweb.net/shared/info/1215991469) and copy the relevant styles to the file `_editor.css` file in your media collection. Add-ons don't work on AnkiMobile for iOS or Ankidroid for Android. If you use the css option you won't have syntax highlighting in the editor component.
 
 - **Default to last language used per deck** (default: true): Whether or not to remember the last programming language for each deck individually
 
