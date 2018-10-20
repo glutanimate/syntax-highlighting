@@ -7,6 +7,7 @@ Allows you to insert **syntax-highlighted code snippets** into your notes.
 
 **RELEASE LOG**
 
+- 2018-10-07: v2.0.2 – Proper support for curly brackets (workaround for [conflicts with Anki's field tags](https://anki.tenderapp.com/discussions/ankidesktop/15367-escape-field-tags-curly-brackets))
 - 2018-10-06: v2.0.1 – Case-insensitive language sorting
 - 2018-08-16: **v2.0.0** – Initial release of this fork
 - 2015-12-25: CSS class option implemented by Tim Rae
