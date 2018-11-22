@@ -23,7 +23,7 @@ Allows you to insert syntax-highlighted code snippets into the spaced-repetition
 
 **AnkiWeb**
 
-[Link to the add-on on AnkiWeb](https://ankiweb.net/shared/info/not_available_yet)
+[Link to the add-on on AnkiWeb](https://ankiweb.net/shared/info/1463041493)
 
 **Manual installation**
 
