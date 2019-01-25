@@ -404,13 +404,12 @@ def highlight_code(ed):
     # TODO: understand why this is neccessary
     else:
         if centerfragments:
-            pretty_code = "".join(["<center><table><tbody><tr><td>",
+            pretty_code = "".join(["<center>",
                                    highlight(code, my_lexer, my_formatter),
-                                   "</td></tr></tbody></table></center><br>"])
+                                   "</center><br>"])
         else:
-            pretty_code = "".join(["<table><tbody><tr><td>",
-                                   highlight(code, my_lexer, my_formatter),
-                                   "</td></tr></tbody></table><br>"])
+            pretty_code = "".join([highlight(code, my_lexer, my_formatter),
+                                   "<br>"])
 
     pretty_code = process_html(pretty_code)
 
