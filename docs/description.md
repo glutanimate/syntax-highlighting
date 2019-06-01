@@ -1,38 +1,12 @@
+<!-- BANNER -->
 
-Allows you to insert **syntax-highlighted code snippets** into your notes.
-
-**SCREENSHOT**
+Allows you to insert **syntax-highlighted code snippets** into your notes:
 
 ![](https://raw.githubusercontent.com/glutanimate/syntax-highlighting/master/screenshots/screenshot_python.png)
 
-**RELEASE LOG**
+<!-- CHANGELOG -->
 
-- 2018-10-07: v2.0.2 – Proper support for curly brackets (workaround for [conflicts with Anki's field tags](https://anki.tenderapp.com/discussions/ankidesktop/15367-escape-field-tags-curly-brackets))
-- 2018-10-06: v2.0.1 – Case-insensitive language sorting
-- 2018-08-16: **v2.0.0** – Initial release of this fork
-- 2015-12-25: CSS class option implemented by Tim Rae
-- 2015-11-20: Last updated release of the original add-on on AnkiWeb
-- 2012: **v1.0.0**? – Initial release by Tiago Barroso
-
-**LATEST CHANGES AND NEWS**
-
-*2018-08-16* **v2.0.0**
-
-This is the first public release of my fork of Tiago Barroso's *Syntax Highlighting for Code* add-on. I would like to extend my heartfelt gratitude to all of what he has done for the Anki community over the years.
-
-This update is meant to carry on his legacy by adding Anki 2.1 support, implementing some long-requested features, and refactoring major parts of the codebase. All of this was made possible through the generous support of a fellow Anki user who would like to remain anonymous.
-
-An overview of the most important changes in this release follows below:
-
-- **New**: Anki 2.1 compatibility
-- **New**: Option to apply syntax highlighting via CSS (thanks to [Tim Rae](https://github.com/timrae/SyntaxHighlight)!)
-- **New**: Ability to customize language selection and hotkey
-- **New**: Ability to customize [syntax highlighting theme](https://help.farbox.com/pygments.html)
-- **New**: Upgraded pygments from v1.6 to v2.2.0. This is a [major jump](http://pygments.org/docs/changelog/#version-2-2-0) and should come with a lot of added functionality in terms of supported languages and language features
-- **Fixed**: Position options dialog correctly
-- **Fixed**: Various improvements and bug fixes (e.g. the ImportErrors and KeyErrors frequently reported in earlier reviews)
-
-**USAGE**
+### USAGE
 
 1. Open the Add Note window in Anki.
 2. Compose your code snippet in your favorite text editor.
@@ -46,7 +20,7 @@ Alternatively, you can compose your code directly in Anki, highlight it, and the
 
 The add-on will automatically remember the last programming language you chose, even after restarting Anki.
 
-**CONFIGURATION**
+### CONFIGURATION
 
 **Basic**
 
@@ -76,40 +50,20 @@ The following options may be customized:
 
 These advanced settings do not sync and require a restart to apply.
 
-**SUPPORT**
+<!-- SUPPORT -->
 
-Please **do not report issues or bugs in the review section below**. I can only reply to your reviews in a limited fashion, so this is not a good way to strike up a dialog and track issues down. Instead, please report all issues you encounter either by creating a bug report on [GitHub](https://github.com/glutanimate/syntax-highlighting/issues), or by posting a new thread on the [Anki add-on support forums](https://anki.tenderapp.com/discussions/add-ons). Please make sure to include the name of the affected add-on in your report title when you do so.
-
-**CREDITS AND LICENSE**
+### CREDITS AND LICENSE
 
 *Copyright © 2012-2015 [Tiago Barroso](https://github.com/tmbb)*
 *Copyright © 2015 [Tim Rae](https://github.com/timrae)*
-*Copyright © 2018 [Aristotelis P.](https://glutanimate.com/)*
+*Copyright © 2018-2019 [Aristotelis P.](https://glutanimate.com/)  (Glutanimate)*
 
 *Syntax Highlighting* is based on [*Syntax Highlighting for Code*](https://github.com/tmbb/SyntaxHighlight) by [Tiago Barroso](https://github.com/tmbb). All credit for the original idea and implementation goes to him. A major thanks is also due to [Tim Rae](https://github.com/timrae), who extended the original add-on with CSS support.
 
 The present fork and update to Anki 2.1 was made possible through the generous support of a fellow Anki user who would like to remain anonymous.
 
-Licensed under the [GNU AGPLv3](https://www.gnu.org/licenses/agpl.html). The code for this add-on is available on [![GitHub icon](https://glutanimate.com/logos/github.svg) GitHub](https://github.com/glutanimate/syntax-highlighting). For more information on the licensing terms and other software shipped with this package please check out the [README](https://github.com/glutanimate/syntax-highlighting#credits).
+Licensed under the _GNU AGPLv3_, extended by a number of additional terms. This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY. For more information on the license please see the [LICENSE file](https://github.com/glutanimate/syntax-highlighting/blob/master/LICENSE) accompanying this add-on. The source code is available on [![GitHub icon](https://glutanimate.com/logos/github.svg) GitHub](https://github.com/glutanimate/syntax-highlighting). Pull requests and other contributions are welcome!
 
-**MORE RESOURCES**
+<!-- RESOURCES -->
 
-A lot of my add-ons were commissioned by other Anki users. Please feel free to reach out to me if you would like to hire my services for any Anki-related development work (writing an add-on for you, converting existing ones to Anki 2.1, implementing a specific feature): ![Email icon](https://glutanimate.com/logos/email.svg) <em>ankiglutanimate [αt] gmail .com</em>. 
-
-Want to stay up-to-date with my latest add-on releases and updates? Feel free to follow me on Twitter: [![Twitter bird](https://glutanimate.com/logos/twitter.svg)@Glutanimate](https://twitter.com/glutanimate)
-
-New to Anki? Make sure to check out my YouTube channel where I post weekly tutorials on Anki add-ons and related topics: [![YouTube playbutton](https://glutanimate.com/logos/youtube.svg) / Glutanimate](https://www.youtube.com/c/glutanimate)
-
-============================================
-
-**SUPPORT THIS ADD-ON**
-
-Writing, supporting, and maintaining Anki add-ons like these takes a lot of time and effort. If *Syntax Highlighting* has been a valuable asset in your studies, please consider using one of the buttons below to support my efforts by buying me a **coffee**, **sandwich**, **meal**, or anything else you'd like:
-
-![](https://glutanimate.com/logos/paypal.svg)        [![](https://glutanimate.com/logos/contrib_btnsw_coffee.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=4FT9NG3NJMY4U&on0=Project&os0=syntax-highlighting "Buy me a coffee ☺")    [![](https://glutanimate.com/logos/contrib_btnsw_sandwich.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=YKSP7QF45Y7SJ&on0=Project&os0=syntax-highlighting "Buy me a burger 😊")    [![](https://glutanimate.com/logos/contrib_btnsw_meal.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=MVDM6JAL2R5JA&on0=Project&os0=syntax-highlighting "Buy me a meal 😄")    [![](https://glutanimate.com/logos/contrib_btnsw_custom.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=EYNV4ECSKBGE4&on0=Project&os0=syntax-highlighting "Contribute a custom amount ☺")
-
-**New**: I also have a Patreon now! If you would like to support my work while also receiving some exclusive add-ons and other goodies, please do check it out!:
-
-[![](https://glutanimate.com/logos/patreon_button.svg)](https://www.patreon.com/glutanimate "Support me on Patreon 😄")
-
-Each and every contribution is greatly appreciated and will help me maintain and improve *Syntax Highlighting* as time goes by!
+<!-- FUNDING -->
