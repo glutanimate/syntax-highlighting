@@ -54,7 +54,7 @@ Currently there are four configuration options, available from Anki's main scree
 
 - **Line numbers** (default: true): Whether or not to include line numbers in the highlighted code
 - **Center code fragments** (default: true): Whether or not to automatically center the code in the field
-- **Use CSS classes** (default: false): Whether or not to use CSS classes instead of inline styles for syntax highlighting.
+- **Use CSS classes** (default: false): Whether or not to use CSS classes instead of inline HTML styles for syntax highlighting.
 
     - Using css classes allows you more customization, and results in a smaller database size, but you'll need to manually adjust the styling, so it's only recommended for advanced users. You will find a selection of CSS styles that you can use in the [documentation on GitHub](https://github.com/glutanimate/syntax-highlighting/blob/master/docs/css.md). 
     - For proper styling of *reviews* you need to include the relevant CSS styles in the Styling section of the card templates of every note type. At the time of the release of this add-on Anki can load css from an external file in your media folder if you use  a line like `@import url("_styles_for_syntax_highlighting.css");`, for details see [here](https://apps.ankiweb.net/docs/manual.html#media18). But loading css from an external file is not documented in the manual. It might break in the future.
