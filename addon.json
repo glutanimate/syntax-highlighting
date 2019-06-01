@@ -7,7 +7,7 @@
     "contact": "https://glutanimate.com",
     "homepage": "https://github.com/glutanimate/syntax-highlighting",
     "copyright_start": 2018,
-    "tags": "",
+    "tags": "code programming syntax-highlighting editor",
     "conflicts": [],
     "targets": [
         "anki20",
