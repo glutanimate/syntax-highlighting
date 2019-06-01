@@ -20,6 +20,8 @@ import re
 
 from .consts import *  # import addon_path
 # always use shipped pygments library
+# FIXME: properly vendorize pygments, lest we interfere with
+# other add-ons that might be shipping their own pygments
 sys.path.insert(0, os.path.join(addon_path, "libs"))
 
 from pygments import highlight
