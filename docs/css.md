@@ -2,11 +2,15 @@
 
 #### Important Notes
 
-Using css classes allows you more customization, and results in a smaller database size, but you'll need to manually include a styling sheet in every note type, so it's only recommended for advanced users.
+Using CSS classes allows you more customization, and results in a smaller database size, but you'll need to manually include a styling sheet in every note type, so it's only recommended for advanced users.
 
 #### Theme Repositories
 
 A wide selection of different CSS themes may be found [here](https://jwarby.github.io/jekyll-pygments-themes/languages/python.html).
+
+#### Support for the Night Mode Add-on
+
+CSS-based styling also opens up the possibility of setting up different coloring schemes depending on whether or not Night Mode is active. For more information, please see the [instructions in Night Mode's README](https://github.com/krassowski/Anki-Night-Mode#custom-css-in-night-mode).
 
 #### Default Template
 
