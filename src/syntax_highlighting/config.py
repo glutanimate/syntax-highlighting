@@ -43,10 +43,10 @@ default_conf = {'linenos': True,  # show numbers by default
 # Synced conf
 
 def sync_keys(tosync, ref):
-    for key in [x for x in list(tosync.keys()) if x not in ref]:
-        del(tosync[key])
+    for key in set(tosync) - set(ref):
+        del tosync[key]
 
-    for key in [x for x in list(ref.keys()) if x not in tosync]:
+    for key in set(ref) - set(tosync):
         tosync[key] = ref[key]
 
 
