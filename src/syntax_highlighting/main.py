@@ -424,11 +424,14 @@ def process_html(html):
     """Modify highlighter output to address some Anki idiosyncracies"""
     # 1.) "Escape" curly bracket sequences reserved to Anki's card template
     # system by placing an invisible html tag inbetween
-    html = re.sub(r"{{", "{<!---->{", html)
-    html = re.sub(r"}}", "}<!---->}", html)
+    for pattern, replacement in ((r"{{", r"{<!---->{"),
+                                 (r"}}", r"}<!---->}"),
+                                 (r"::", r":<!---->:")):
+        html = re.sub(pattern, replacement, html)
     return html
 
 # Hooks and monkey-patches
+
 
 if anki21:
     addHook("setupEditorButtons", onSetupButtons21)
