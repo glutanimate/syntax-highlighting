@@ -375,11 +375,32 @@ def highlight_code(ed):
         # Get the code from the clipboard
         code = clipboard.text()
 
+    # Search in each line for the first non-whitespace character,
+    # and calculate minimum padding shared between all lines.
+    lines = code.splitlines()
+    starting_space = sys.maxsize
+    
+    for l in lines:
+        # only interested in non-empty lines
+        if len(l.strip()) > 0:
+            # get the index of the first non whitespace character
+            s = len(l) - len(l.lstrip())
+            # is it smaller than anything found?
+            if s < starting_space:
+                starting_space = s
+    
+    # if we found a minimum number of chars we can strip off each line, do it.
+    if (starting_space < sys.maxsize):
+        code = '';    
+        for l in lines:
+            code = code + l[starting_space:] + '\n'
+
     langAlias = ed.codeHighlightLangAlias
 
-    # Select the lexer for the correct language
+    # Select the lexer for the correct language.
+    # Should not strip leading and trailing whitespace from the input.
     try:
-        my_lexer = get_lexer_by_name(langAlias, stripall=True)
+        my_lexer = get_lexer_by_name(langAlias, stripall=False)
     except ClassNotFound as e:
         print(e)
         showError(ERR_LEXER, parent=ed.parentWindow)
