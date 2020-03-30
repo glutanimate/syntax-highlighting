@@ -252,12 +252,12 @@ def add_plugin_button_(self,
 def add_code_langs_combobox(self, func, previous_lang):
     combo = QComboBox()
     combo.addItem(previous_lang)
-    
+
     if LIMITED_LANGS:
         selection = LIMITED_LANGS
     else:
         selection = sorted(LANGUAGES_MAP.keys(), key=string.lower)
-    
+
     for lang in selection:
         combo.addItem(lang)
 
@@ -395,32 +395,18 @@ def highlight_code(ed):
         showError(ERR_STYLE, parent=ed.parentWindow)
         return False
 
-    if linenos:
-        if centerfragments:
-            pretty_code = "".join(["<center>",
-                                   highlight(code, my_lexer, my_formatter),
-                                   "</center><br>"])
-        else:
-            pretty_code = "".join([highlight(code, my_lexer, my_formatter),
-                                   "<br>"])
-    # TODO: understand why this is neccessary
-    else:
-        if centerfragments:
-            pretty_code = "".join(["<center>",
-                                   highlight(code, my_lexer, my_formatter),
-                                   "</center><br>"])
-        else:
-            pretty_code = "".join([highlight(code, my_lexer, my_formatter),
-                                   "<br>"])
-
-    pretty_code = process_html(pretty_code)
+    pretty_code = highlight(code, my_lexer, my_formatter)
+    pretty_code = process_html(pretty_code, linenos)
+    if centerfragments:
+        pretty_code = "".join(["<center>", pretty_code, "</center><br>"])
+    pretty_code = process_html(pretty_code, linenos)
 
     # These two lines insert a piece of HTML in the current cursor position
     ed.web.eval("document.execCommand('inserthtml', false, %s);"
                 % json.dumps(pretty_code))
 
 
-def process_html(html):
+def process_html(html, linenos=True):
     """Modify highlighter output to address some Anki idiosyncracies"""
     # 1.) "Escape" curly bracket sequences reserved to Anki's card template
     # system by placing an invisible html tag inbetween
@@ -428,6 +414,14 @@ def process_html(html):
                                  (r"}}", r"}<!---->}"),
                                  (r"::", r":<!---->:")):
         html = re.sub(pattern, replacement, html)
+    # remove unnecessary HTML tags if no linenos are needed
+    if not linenos:
+        tostrip="<table><tbody><tr><td>"
+        if html.startswith(tostrip):
+            html = html[len(tostrip):]
+        tostrip="</td></tr></tbody></table>"
+        if html.endswith(tostrip):
+            html = html[:-len(tostrip)]
     return html
 
 # Hooks and monkey-patches
