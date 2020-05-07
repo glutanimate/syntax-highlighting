@@ -83,7 +83,7 @@ def get_deck_name(mw):
 
 
 def get_default_lang(mw):
-    addon_conf = mw.col.conf['syntax_highlighting_conf']
+    addon_conf = mw.col.get_config('syntax_highlighting_conf')
     lang = addon_conf['lang']
     if addon_conf['defaultlangperdeck']:
         deck_name = get_deck_name(mw)
@@ -93,7 +93,7 @@ def get_default_lang(mw):
 
 
 def set_default_lang(mw, lang):
-    addon_conf = mw.col.conf['syntax_highlighting_conf']
+    addon_conf = mw.col.get_config('syntax_highlighting_conf')
     addon_conf['lang'] = lang  # Always update the overall default
     if addon_conf['defaultlangperdeck']:
         deck_name = get_deck_name(mw)
@@ -125,7 +125,7 @@ class SyntaxHighlightingOptions(QDialog):
         self.addon_conf['cssclasses'] = not cssclasses_
 
     def setupUi(self):
-        self.addon_conf = self.mw.col.conf['syntax_highlighting_conf']
+        self.addon_conf = self.mw.col.get_config('syntax_highlighting_conf')
 
         linenos_label = QLabel('<b>Line numbers</b>')
         linenos_checkbox = QCheckBox('')
@@ -349,7 +349,7 @@ def onBridgeCmd(ed, cmd, _old):
 
 
 def highlight_code(ed):
-    addon_conf = mw.col.conf['syntax_highlighting_conf']
+    addon_conf = mw.col.get_config('syntax_highlighting_conf')
 
     #  Do we want line numbers? linenos is either true or false according
     # to the user's preferences

@@ -28,7 +28,7 @@ meta_path = os.path.join(addon_path, "meta.json")
 ###############################################################
 
 # Defaults conf
-# - we create a new item in mw.col.conf. This syncs the
+# - we create a new item in the collection's configuration. This syncs the
 # options across machines (but not on mobile)
 default_conf = {'linenos': True,  # show numbers by default
                 'centerfragments': True,  # Use <center> when generating code fragments
@@ -52,9 +52,9 @@ def sync_keys(tosync, ref):
 
 def sync_config_with_default(col):
     if not 'syntax_highlighting_conf' in col.conf:
-        col.conf['syntax_highlighting_conf'] = default_conf
+        col.set_config('syntax_highlighting_conf', default_conf)
     else:
-        sync_keys(col.conf['syntax_highlighting_conf'], default_conf)
+        sync_keys(col.get_config('syntax_highlighting_conf'), default_conf)
 
     # Mark collection state as modified, else config changes get lost unless
     # some unrelated action triggers the flush of collection data to db
