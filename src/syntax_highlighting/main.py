@@ -17,6 +17,7 @@ from __future__ import unicode_literals
 import os
 import sys
 import re
+import json
 
 from .consts import *  # import addon_path
 # always use shipped pygments library
@@ -33,7 +34,6 @@ from aqt.qt import *
 from aqt import mw
 from aqt.editor import Editor
 from aqt.utils import showWarning
-from anki.utils import json
 from anki.hooks import addHook, wrap
 
 from .config import local_conf
