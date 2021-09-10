@@ -1,11 +1,10 @@
-# -*- coding: utf-8 -*-
 """
     pygments.lexers.templates
     ~~~~~~~~~~~~~~~~~~~~~~~~~
 
     Lexers for various template engines' markup.
 
-    :copyright: Copyright 2006-2017 by the Pygments team, see AUTHORS.
+    :copyright: Copyright 2006-2021 by the Pygments team, see AUTHORS.
     :license: BSD, see LICENSE for details.
 """
 
@@ -179,21 +178,21 @@ class SmartyLexer(RegexLexer):
             (r'(true|false|null)\b', Keyword.Constant),
             (r"[0-9](\.[0-9]*)?(eE[+-][0-9])?[flFLdD]?|"
              r"0[xX][0-9a-fA-F]+[Ll]?", Number),
-            (r'"(\\\\|\\"|[^"])*"', String.Double),
-            (r"'(\\\\|\\'|[^'])*'", String.Single),
+            (r'"(\\\\|\\[^\\]|[^"\\])*"', String.Double),
+            (r"'(\\\\|\\[^\\]|[^'\\])*'", String.Single),
             (r'[a-zA-Z_]\w*', Name.Attribute)
         ]
     }
 
     def analyse_text(text):
         rv = 0.0
-        if re.search('\{if\s+.*?\}.*?\{/if\}', text):
+        if re.search(r'\{if\s+.*?\}.*?\{/if\}', text):
             rv += 0.15
-        if re.search('\{include\s+file=.*?\}', text):
+        if re.search(r'\{include\s+file=.*?\}', text):
             rv += 0.15
-        if re.search('\{foreach\s+.*?\}.*?\{/foreach\}', text):
+        if re.search(r'\{foreach\s+.*?\}.*?\{/foreach\}', text):
             rv += 0.15
-        if re.search('\{\$.*?\}', text):
+        if re.search(r'\{\$.*?\}', text):
             rv += 0.01
         return rv
 
@@ -226,7 +225,7 @@ class VelocityLexer(RegexLexer):
              'directiveparams'),
             (r'(#\{?)(' + identifier + r')(\}|\b)',
              bygroups(Comment.Preproc, Name.Function, Comment.Preproc)),
-            (r'\$\{?', Punctuation, 'variable')
+            (r'\$!?\{?', Punctuation, 'variable')
         ],
         'variable': [
             (identifier, Name.Variable),
@@ -249,11 +248,11 @@ class VelocityLexer(RegexLexer):
             (r'\]', Operator, '#pop')
         ],
         'funcparams': [
-            (r'\$\{?', Punctuation, 'variable'),
+            (r'\$!?\{?', Punctuation, 'variable'),
             (r'\s+', Text),
             (r'[,:]', Punctuation),
-            (r'"(\\\\|\\"|[^"])*"', String.Double),
-            (r"'(\\\\|\\'|[^'])*'", String.Single),
+            (r'"(\\\\|\\[^\\]|[^"\\])*"', String.Double),
+            (r"'(\\\\|\\[^\\]|[^'\\])*'", String.Single),
             (r"0[xX][0-9a-fA-F]+[Ll]?", Number),
             (r"\b[0-9]+\b", Number),
             (r'(true|false|null)\b', Keyword.Constant),
@@ -268,13 +267,13 @@ class VelocityLexer(RegexLexer):
 
     def analyse_text(text):
         rv = 0.0
-        if re.search(r'#\{?macro\}?\(.*?\).*?#\{?end\}?', text):
+        if re.search(r'#\{?macro\}?\(.*?\).*?#\{?end\}?', text, re.DOTALL):
             rv += 0.25
-        if re.search(r'#\{?if\}?\(.+?\).*?#\{?end\}?', text):
+        if re.search(r'#\{?if\}?\(.+?\).*?#\{?end\}?', text, re.DOTALL):
             rv += 0.15
-        if re.search(r'#\{?foreach\}?\(.+?\).*?#\{?end\}?', text):
+        if re.search(r'#\{?foreach\}?\(.+?\).*?#\{?end\}?', text, re.DOTALL):
             rv += 0.15
-        if re.search(r'\$\{?[a-zA-Z_]\w*(\([^)]*\))?'
+        if re.search(r'\$!?\{?[a-zA-Z_]\w*(\([^)]*\))?'
                      r'(\.\w+(\([^)]*\))?)*\}?', text):
             rv += 0.01
         return rv
@@ -293,8 +292,7 @@ class VelocityHtmlLexer(DelegatingLexer):
     mimetypes = ['text/html+velocity']
 
     def __init__(self, **options):
-        super(VelocityHtmlLexer, self).__init__(HtmlLexer, VelocityLexer,
-                                                **options)
+        super().__init__(HtmlLexer, VelocityLexer, **options)
 
 
 class VelocityXmlLexer(DelegatingLexer):
@@ -310,8 +308,7 @@ class VelocityXmlLexer(DelegatingLexer):
     mimetypes = ['application/xml+velocity']
 
     def __init__(self, **options):
-        super(VelocityXmlLexer, self).__init__(XmlLexer, VelocityLexer,
-                                               **options)
+        super().__init__(XmlLexer, VelocityLexer, **options)
 
     def analyse_text(text):
         rv = VelocityLexer.analyse_text(text) - 0.01
@@ -323,7 +320,7 @@ class VelocityXmlLexer(DelegatingLexer):
 class DjangoLexer(RegexLexer):
     """
     Generic `django <http://www.djangoproject.com/documentation/templates/>`_
-    and `jinja <http://wsgiarea.pocoo.org/jinja/>`_ template lexer.
+    and `jinja <https://jinja.pocoo.org/jinja/>`_ template lexer.
 
     It just highlights django/jinja code between the preprocessor directives,
     other data is left untouched by the lexer.
@@ -340,7 +337,7 @@ class DjangoLexer(RegexLexer):
             (r'[^{]+', Other),
             (r'\{\{', Comment.Preproc, 'var'),
             # jinja/django comments
-            (r'\{[*#].*?[*#]\}', Comment),
+            (r'\{#.*?#\}', Comment),
             # django comments
             (r'(\{%)(-?\s*)(comment)(\s*-?)(%\})(.*?)'
              r'(\{%)(-?\s*)(endcomment)(\s*-?)(%\})',
@@ -373,9 +370,9 @@ class DjangoLexer(RegexLexer):
             (r'(loop|block|super|forloop)\b', Name.Builtin),
             (r'[a-zA-Z_][\w-]*', Name.Variable),
             (r'\.\w+', Name.Variable),
-            (r':?"(\\\\|\\"|[^"])*"', String.Double),
-            (r":?'(\\\\|\\'|[^'])*'", String.Single),
-            (r'([{}()\[\]+\-*/,:~]|[><=]=?)', Operator),
+            (r':?"(\\\\|\\[^\\]|[^"\\])*"', String.Double),
+            (r":?'(\\\\|\\[^\\]|[^'\\])*'", String.Single),
+            (r'([{}()\[\]+\-*/%,:~]|[><=]=?|!=)', Operator),
             (r"[0-9](\.[0-9]*)?(eE[+-][0-9])?[flFLdD]?|"
              r"0[xX][0-9a-fA-F]+[Ll]?", Number),
         ],
@@ -421,18 +418,18 @@ class MyghtyLexer(RegexLexer):
     tokens = {
         'root': [
             (r'\s+', Text),
-            (r'(<%(?:def|method))(\s*)(.*?)(>)(.*?)(</%\2\s*>)(?s)',
+            (r'(?s)(<%(?:def|method))(\s*)(.*?)(>)(.*?)(</%\2\s*>)',
              bygroups(Name.Tag, Text, Name.Function, Name.Tag,
                       using(this), Name.Tag)),
-            (r'(<%\w+)(.*?)(>)(.*?)(</%\2\s*>)(?s)',
+            (r'(?s)(<%\w+)(.*?)(>)(.*?)(</%\2\s*>)',
              bygroups(Name.Tag, Name.Function, Name.Tag,
                       using(PythonLexer), Name.Tag)),
             (r'(<&[^|])(.*?)(,.*?)?(&>)',
              bygroups(Name.Tag, Name.Function, using(PythonLexer), Name.Tag)),
-            (r'(<&\|)(.*?)(,.*?)?(&>)(?s)',
+            (r'(?s)(<&\|)(.*?)(,.*?)?(&>)',
              bygroups(Name.Tag, Name.Function, using(PythonLexer), Name.Tag)),
             (r'</&>', Name.Tag),
-            (r'(<%!?)(.*?)(%>)(?s)',
+            (r'(?s)(<%!?)(.*?)(%>)',
              bygroups(Name.Tag, using(PythonLexer), Name.Tag)),
             (r'(?<=^)#[^\n]*(\n|\Z)', Comment),
             (r'(?<=^)(%)([^\n]*)(\n|\Z)',
@@ -464,8 +461,7 @@ class MyghtyHtmlLexer(DelegatingLexer):
     mimetypes = ['text/html+myghty']
 
     def __init__(self, **options):
-        super(MyghtyHtmlLexer, self).__init__(HtmlLexer, MyghtyLexer,
-                                              **options)
+        super().__init__(HtmlLexer, MyghtyLexer, **options)
 
 
 class MyghtyXmlLexer(DelegatingLexer):
@@ -481,8 +477,7 @@ class MyghtyXmlLexer(DelegatingLexer):
     mimetypes = ['application/xml+myghty']
 
     def __init__(self, **options):
-        super(MyghtyXmlLexer, self).__init__(XmlLexer, MyghtyLexer,
-                                             **options)
+        super().__init__(XmlLexer, MyghtyLexer, **options)
 
 
 class MyghtyJavascriptLexer(DelegatingLexer):
@@ -494,14 +489,13 @@ class MyghtyJavascriptLexer(DelegatingLexer):
     """
 
     name = 'JavaScript+Myghty'
-    aliases = ['js+myghty', 'javascript+myghty']
+    aliases = ['javascript+myghty', 'js+myghty']
     mimetypes = ['application/x-javascript+myghty',
                  'text/x-javascript+myghty',
                  'text/javascript+mygthy']
 
     def __init__(self, **options):
-        super(MyghtyJavascriptLexer, self).__init__(JavascriptLexer,
-                                                    MyghtyLexer, **options)
+        super().__init__(JavascriptLexer, MyghtyLexer, **options)
 
 
 class MyghtyCssLexer(DelegatingLexer):
@@ -517,8 +511,7 @@ class MyghtyCssLexer(DelegatingLexer):
     mimetypes = ['text/css+myghty']
 
     def __init__(self, **options):
-        super(MyghtyCssLexer, self).__init__(CssLexer, MyghtyLexer,
-                                             **options)
+        super().__init__(CssLexer, MyghtyLexer, **options)
 
 
 class MasonLexer(RegexLexer):
@@ -538,20 +531,19 @@ class MasonLexer(RegexLexer):
     tokens = {
         'root': [
             (r'\s+', Text),
-            (r'(<%doc>)(.*?)(</%doc>)(?s)',
+            (r'(?s)(<%doc>)(.*?)(</%doc>)',
              bygroups(Name.Tag, Comment.Multiline, Name.Tag)),
-            (r'(<%(?:def|method))(\s*)(.*?)(>)(.*?)(</%\2\s*>)(?s)',
+            (r'(?s)(<%(?:def|method))(\s*)(.*?)(>)(.*?)(</%\2\s*>)',
              bygroups(Name.Tag, Text, Name.Function, Name.Tag,
                       using(this), Name.Tag)),
-            (r'(<%\w+)(.*?)(>)(.*?)(</%\2\s*>)(?s)',
-             bygroups(Name.Tag, Name.Function, Name.Tag,
-                      using(PerlLexer), Name.Tag)),
-            (r'(<&[^|])(.*?)(,.*?)?(&>)(?s)',
+            (r'(?s)(<%(\w+)(.*?)(>))(.*?)(</%\2\s*>)',
+             bygroups(Name.Tag, None, None, None, using(PerlLexer), Name.Tag)),
+            (r'(?s)(<&[^|])(.*?)(,.*?)?(&>)',
              bygroups(Name.Tag, Name.Function, using(PerlLexer), Name.Tag)),
-            (r'(<&\|)(.*?)(,.*?)?(&>)(?s)',
+            (r'(?s)(<&\|)(.*?)(,.*?)?(&>)',
              bygroups(Name.Tag, Name.Function, using(PerlLexer), Name.Tag)),
             (r'</&>', Name.Tag),
-            (r'(<%!?)(.*?)(%>)(?s)',
+            (r'(?s)(<%!?)(.*?)(%>)',
              bygroups(Name.Tag, using(PerlLexer), Name.Tag)),
             (r'(?<=^)#[^\n]*(\n|\Z)', Comment),
             (r'(?<=^)(%)([^\n]*)(\n|\Z)',
@@ -571,7 +563,7 @@ class MasonLexer(RegexLexer):
 
     def analyse_text(text):
         result = 0.0
-        if re.search(r'</%(class|doc|init)%>', text) is not None:
+        if re.search(r'</%(class|doc|init)>', text) is not None:
             result = 1.0
         elif re.search(r'<&.+&>', text, re.DOTALL) is not None:
             result = 0.11
@@ -596,18 +588,18 @@ class MakoLexer(RegexLexer):
     tokens = {
         'root': [
             (r'(\s*)(%)(\s*end(?:\w+))(\n|\Z)',
-             bygroups(Text, Comment.Preproc, Keyword, Other)),
+             bygroups(Text.Whitespace, Comment.Preproc, Keyword, Other)),
             (r'(\s*)(%)([^\n]*)(\n|\Z)',
-             bygroups(Text, Comment.Preproc, using(PythonLexer), Other)),
+             bygroups(Text.Whitespace, Comment.Preproc, using(PythonLexer), Other)),
             (r'(\s*)(##[^\n]*)(\n|\Z)',
-             bygroups(Text, Comment.Preproc, Other)),
-            (r'(?s)<%doc>.*?</%doc>', Comment.Preproc),
+             bygroups(Text.Whitespace, Comment.Single, Text.Whitespace)),
+            (r'(?s)<%doc>.*?</%doc>', Comment.Multiline),
             (r'(<%)([\w.:]+)',
              bygroups(Comment.Preproc, Name.Builtin), 'tag'),
             (r'(</%)([\w.:]+)(>)',
              bygroups(Comment.Preproc, Name.Builtin, Comment.Preproc)),
             (r'<%(?=([\w.:]+))', Comment.Preproc, 'ondeftags'),
-            (r'(<%(?:!?))(.*?)(%>)(?s)',
+            (r'(?s)(<%(?:!?))(.*?)(%>)',
              bygroups(Comment.Preproc, using(PythonLexer), Comment.Preproc)),
             (r'(\$\{)(.*?)(\})',
              bygroups(Comment.Preproc, using(PythonLexer), Comment.Preproc)),
@@ -659,8 +651,7 @@ class MakoHtmlLexer(DelegatingLexer):
     mimetypes = ['text/html+mako']
 
     def __init__(self, **options):
-        super(MakoHtmlLexer, self).__init__(HtmlLexer, MakoLexer,
-                                            **options)
+        super().__init__(HtmlLexer, MakoLexer, **options)
 
 
 class MakoXmlLexer(DelegatingLexer):
@@ -676,8 +667,7 @@ class MakoXmlLexer(DelegatingLexer):
     mimetypes = ['application/xml+mako']
 
     def __init__(self, **options):
-        super(MakoXmlLexer, self).__init__(XmlLexer, MakoLexer,
-                                           **options)
+        super().__init__(XmlLexer, MakoLexer, **options)
 
 
 class MakoJavascriptLexer(DelegatingLexer):
@@ -689,14 +679,13 @@ class MakoJavascriptLexer(DelegatingLexer):
     """
 
     name = 'JavaScript+Mako'
-    aliases = ['js+mako', 'javascript+mako']
+    aliases = ['javascript+mako', 'js+mako']
     mimetypes = ['application/x-javascript+mako',
                  'text/x-javascript+mako',
                  'text/javascript+mako']
 
     def __init__(self, **options):
-        super(MakoJavascriptLexer, self).__init__(JavascriptLexer,
-                                                  MakoLexer, **options)
+        super().__init__(JavascriptLexer, MakoLexer, **options)
 
 
 class MakoCssLexer(DelegatingLexer):
@@ -712,8 +701,7 @@ class MakoCssLexer(DelegatingLexer):
     mimetypes = ['text/css+mako']
 
     def __init__(self, **options):
-        super(MakoCssLexer, self).__init__(CssLexer, MakoLexer,
-                                           **options)
+        super().__init__(CssLexer, MakoLexer, **options)
 
 
 # Genshi and Cheetah lexers courtesy of Matt Good.
@@ -759,7 +747,7 @@ class CheetahLexer(RegexLexer):
             # TODO support other Python syntax like $foo['bar']
             (r'(\$)([a-zA-Z_][\w.]*\w)',
              bygroups(Comment.Preproc, using(CheetahPythonLexer))),
-            (r'(\$\{!?)(.*?)(\})(?s)',
+            (r'(?s)(\$\{!?)(.*?)(\})',
              bygroups(Comment.Preproc, using(CheetahPythonLexer),
                       Comment.Preproc)),
             (r'''(?sx)
@@ -786,8 +774,7 @@ class CheetahHtmlLexer(DelegatingLexer):
     mimetypes = ['text/html+cheetah', 'text/html+spitfire']
 
     def __init__(self, **options):
-        super(CheetahHtmlLexer, self).__init__(HtmlLexer, CheetahLexer,
-                                               **options)
+        super().__init__(HtmlLexer, CheetahLexer, **options)
 
 
 class CheetahXmlLexer(DelegatingLexer):
@@ -801,8 +788,7 @@ class CheetahXmlLexer(DelegatingLexer):
     mimetypes = ['application/xml+cheetah', 'application/xml+spitfire']
 
     def __init__(self, **options):
-        super(CheetahXmlLexer, self).__init__(XmlLexer, CheetahLexer,
-                                              **options)
+        super().__init__(XmlLexer, CheetahLexer, **options)
 
 
 class CheetahJavascriptLexer(DelegatingLexer):
@@ -812,8 +798,8 @@ class CheetahJavascriptLexer(DelegatingLexer):
     """
 
     name = 'JavaScript+Cheetah'
-    aliases = ['js+cheetah', 'javascript+cheetah',
-               'js+spitfire', 'javascript+spitfire']
+    aliases = ['javascript+cheetah', 'js+cheetah',
+               'javascript+spitfire', 'js+spitfire']
     mimetypes = ['application/x-javascript+cheetah',
                  'text/x-javascript+cheetah',
                  'text/javascript+cheetah',
@@ -822,8 +808,7 @@ class CheetahJavascriptLexer(DelegatingLexer):
                  'text/javascript+spitfire']
 
     def __init__(self, **options):
-        super(CheetahJavascriptLexer, self).__init__(JavascriptLexer,
-                                                     CheetahLexer, **options)
+        super().__init__(JavascriptLexer, CheetahLexer, **options)
 
 
 class GenshiTextLexer(RegexLexer):
@@ -937,14 +922,13 @@ class HtmlGenshiLexer(DelegatingLexer):
     mimetypes = ['text/html+genshi']
 
     def __init__(self, **options):
-        super(HtmlGenshiLexer, self).__init__(HtmlLexer, GenshiMarkupLexer,
-                                              **options)
+        super().__init__(HtmlLexer, GenshiMarkupLexer, **options)
 
     def analyse_text(text):
         rv = 0.0
-        if re.search('\$\{.*?\}', text) is not None:
+        if re.search(r'\$\{.*?\}', text) is not None:
             rv += 0.2
-        if re.search('py:(.*?)=["\']', text) is not None:
+        if re.search(r'py:(.*?)=["\']', text) is not None:
             rv += 0.2
         return rv + HtmlLexer.analyse_text(text) - 0.01
 
@@ -962,14 +946,13 @@ class GenshiLexer(DelegatingLexer):
     mimetypes = ['application/x-genshi', 'application/x-kid']
 
     def __init__(self, **options):
-        super(GenshiLexer, self).__init__(XmlLexer, GenshiMarkupLexer,
-                                          **options)
+        super().__init__(XmlLexer, GenshiMarkupLexer, **options)
 
     def analyse_text(text):
         rv = 0.0
-        if re.search('\$\{.*?\}', text) is not None:
+        if re.search(r'\$\{.*?\}', text) is not None:
             rv += 0.2
-        if re.search('py:(.*?)=["\']', text) is not None:
+        if re.search(r'py:(.*?)=["\']', text) is not None:
             rv += 0.2
         return rv + XmlLexer.analyse_text(text) - 0.01
 
@@ -988,9 +971,7 @@ class JavascriptGenshiLexer(DelegatingLexer):
                  'text/javascript+genshi']
 
     def __init__(self, **options):
-        super(JavascriptGenshiLexer, self).__init__(JavascriptLexer,
-                                                    GenshiTextLexer,
-                                                    **options)
+        super().__init__(JavascriptLexer, GenshiTextLexer, **options)
 
     def analyse_text(text):
         return GenshiLexer.analyse_text(text) - 0.05
@@ -1007,8 +988,7 @@ class CssGenshiLexer(DelegatingLexer):
     mimetypes = ['text/css+genshi']
 
     def __init__(self, **options):
-        super(CssGenshiLexer, self).__init__(CssLexer, GenshiTextLexer,
-                                             **options)
+        super().__init__(CssLexer, GenshiTextLexer, **options)
 
     def analyse_text(text):
         return GenshiLexer.analyse_text(text) - 0.05
@@ -1029,7 +1009,7 @@ class RhtmlLexer(DelegatingLexer):
     mimetypes = ['text/html+ruby']
 
     def __init__(self, **options):
-        super(RhtmlLexer, self).__init__(HtmlLexer, ErbLexer, **options)
+        super().__init__(HtmlLexer, ErbLexer, **options)
 
     def analyse_text(text):
         rv = ErbLexer.analyse_text(text) - 0.01
@@ -1046,12 +1026,12 @@ class XmlErbLexer(DelegatingLexer):
     """
 
     name = 'XML+Ruby'
-    aliases = ['xml+erb', 'xml+ruby']
+    aliases = ['xml+ruby', 'xml+erb']
     alias_filenames = ['*.xml']
     mimetypes = ['application/xml+ruby']
 
     def __init__(self, **options):
-        super(XmlErbLexer, self).__init__(XmlLexer, ErbLexer, **options)
+        super().__init__(XmlLexer, ErbLexer, **options)
 
     def analyse_text(text):
         rv = ErbLexer.analyse_text(text) - 0.01
@@ -1066,12 +1046,12 @@ class CssErbLexer(DelegatingLexer):
     """
 
     name = 'CSS+Ruby'
-    aliases = ['css+erb', 'css+ruby']
+    aliases = ['css+ruby', 'css+erb']
     alias_filenames = ['*.css']
     mimetypes = ['text/css+ruby']
 
     def __init__(self, **options):
-        super(CssErbLexer, self).__init__(CssLexer, ErbLexer, **options)
+        super().__init__(CssLexer, ErbLexer, **options)
 
     def analyse_text(text):
         return ErbLexer.analyse_text(text) - 0.05
@@ -1084,15 +1064,14 @@ class JavascriptErbLexer(DelegatingLexer):
     """
 
     name = 'JavaScript+Ruby'
-    aliases = ['js+erb', 'javascript+erb', 'js+ruby', 'javascript+ruby']
+    aliases = ['javascript+ruby', 'js+ruby', 'javascript+erb', 'js+erb']
     alias_filenames = ['*.js']
     mimetypes = ['application/x-javascript+ruby',
                  'text/x-javascript+ruby',
                  'text/javascript+ruby']
 
     def __init__(self, **options):
-        super(JavascriptErbLexer, self).__init__(JavascriptLexer, ErbLexer,
-                                                 **options)
+        super().__init__(JavascriptLexer, ErbLexer, **options)
 
     def analyse_text(text):
         return ErbLexer.analyse_text(text) - 0.05
@@ -1115,7 +1094,7 @@ class HtmlPhpLexer(DelegatingLexer):
                  'application/x-httpd-php4', 'application/x-httpd-php5']
 
     def __init__(self, **options):
-        super(HtmlPhpLexer, self).__init__(HtmlLexer, PhpLexer, **options)
+        super().__init__(HtmlLexer, PhpLexer, **options)
 
     def analyse_text(text):
         rv = PhpLexer.analyse_text(text) - 0.01
@@ -1135,7 +1114,7 @@ class XmlPhpLexer(DelegatingLexer):
     mimetypes = ['application/xml+php']
 
     def __init__(self, **options):
-        super(XmlPhpLexer, self).__init__(XmlLexer, PhpLexer, **options)
+        super().__init__(XmlLexer, PhpLexer, **options)
 
     def analyse_text(text):
         rv = PhpLexer.analyse_text(text) - 0.01
@@ -1155,7 +1134,7 @@ class CssPhpLexer(DelegatingLexer):
     mimetypes = ['text/css+php']
 
     def __init__(self, **options):
-        super(CssPhpLexer, self).__init__(CssLexer, PhpLexer, **options)
+        super().__init__(CssLexer, PhpLexer, **options)
 
     def analyse_text(text):
         return PhpLexer.analyse_text(text) - 0.05
@@ -1168,15 +1147,14 @@ class JavascriptPhpLexer(DelegatingLexer):
     """
 
     name = 'JavaScript+PHP'
-    aliases = ['js+php', 'javascript+php']
+    aliases = ['javascript+php', 'js+php']
     alias_filenames = ['*.js']
     mimetypes = ['application/x-javascript+php',
                  'text/x-javascript+php',
                  'text/javascript+php']
 
     def __init__(self, **options):
-        super(JavascriptPhpLexer, self).__init__(JavascriptLexer, PhpLexer,
-                                                 **options)
+        super().__init__(JavascriptLexer, PhpLexer, **options)
 
     def analyse_text(text):
         return PhpLexer.analyse_text(text)
@@ -1196,7 +1174,7 @@ class HtmlSmartyLexer(DelegatingLexer):
     mimetypes = ['text/html+smarty']
 
     def __init__(self, **options):
-        super(HtmlSmartyLexer, self).__init__(HtmlLexer, SmartyLexer, **options)
+        super().__init__(HtmlLexer, SmartyLexer, **options)
 
     def analyse_text(text):
         rv = SmartyLexer.analyse_text(text) - 0.01
@@ -1217,7 +1195,7 @@ class XmlSmartyLexer(DelegatingLexer):
     mimetypes = ['application/xml+smarty']
 
     def __init__(self, **options):
-        super(XmlSmartyLexer, self).__init__(XmlLexer, SmartyLexer, **options)
+        super().__init__(XmlLexer, SmartyLexer, **options)
 
     def analyse_text(text):
         rv = SmartyLexer.analyse_text(text) - 0.01
@@ -1238,7 +1216,7 @@ class CssSmartyLexer(DelegatingLexer):
     mimetypes = ['text/css+smarty']
 
     def __init__(self, **options):
-        super(CssSmartyLexer, self).__init__(CssLexer, SmartyLexer, **options)
+        super().__init__(CssLexer, SmartyLexer, **options)
 
     def analyse_text(text):
         return SmartyLexer.analyse_text(text) - 0.05
@@ -1251,15 +1229,14 @@ class JavascriptSmartyLexer(DelegatingLexer):
     """
 
     name = 'JavaScript+Smarty'
-    aliases = ['js+smarty', 'javascript+smarty']
+    aliases = ['javascript+smarty', 'js+smarty']
     alias_filenames = ['*.js', '*.tpl']
     mimetypes = ['application/x-javascript+smarty',
                  'text/x-javascript+smarty',
                  'text/javascript+smarty']
 
     def __init__(self, **options):
-        super(JavascriptSmartyLexer, self).__init__(JavascriptLexer, SmartyLexer,
-                                                    **options)
+        super().__init__(JavascriptLexer, SmartyLexer, **options)
 
     def analyse_text(text):
         return SmartyLexer.analyse_text(text) - 0.05
@@ -1279,7 +1256,7 @@ class HtmlDjangoLexer(DelegatingLexer):
     mimetypes = ['text/html+django', 'text/html+jinja']
 
     def __init__(self, **options):
-        super(HtmlDjangoLexer, self).__init__(HtmlLexer, DjangoLexer, **options)
+        super().__init__(HtmlLexer, DjangoLexer, **options)
 
     def analyse_text(text):
         rv = DjangoLexer.analyse_text(text) - 0.01
@@ -1300,7 +1277,7 @@ class XmlDjangoLexer(DelegatingLexer):
     mimetypes = ['application/xml+django', 'application/xml+jinja']
 
     def __init__(self, **options):
-        super(XmlDjangoLexer, self).__init__(XmlLexer, DjangoLexer, **options)
+        super().__init__(XmlLexer, DjangoLexer, **options)
 
     def analyse_text(text):
         rv = DjangoLexer.analyse_text(text) - 0.01
@@ -1321,7 +1298,7 @@ class CssDjangoLexer(DelegatingLexer):
     mimetypes = ['text/css+django', 'text/css+jinja']
 
     def __init__(self, **options):
-        super(CssDjangoLexer, self).__init__(CssLexer, DjangoLexer, **options)
+        super().__init__(CssLexer, DjangoLexer, **options)
 
     def analyse_text(text):
         return DjangoLexer.analyse_text(text) - 0.05
@@ -1334,8 +1311,8 @@ class JavascriptDjangoLexer(DelegatingLexer):
     """
 
     name = 'JavaScript+Django/Jinja'
-    aliases = ['js+django', 'javascript+django',
-               'js+jinja', 'javascript+jinja']
+    aliases = ['javascript+django', 'js+django',
+               'javascript+jinja', 'js+jinja']
     alias_filenames = ['*.js']
     mimetypes = ['application/x-javascript+django',
                  'application/x-javascript+jinja',
@@ -1345,8 +1322,7 @@ class JavascriptDjangoLexer(DelegatingLexer):
                  'text/javascript+jinja']
 
     def __init__(self, **options):
-        super(JavascriptDjangoLexer, self).__init__(JavascriptLexer, DjangoLexer,
-                                                    **options)
+        super().__init__(JavascriptLexer, DjangoLexer, **options)
 
     def analyse_text(text):
         return DjangoLexer.analyse_text(text) - 0.05
@@ -1389,7 +1365,7 @@ class JspLexer(DelegatingLexer):
     mimetypes = ['application/x-jsp']
 
     def __init__(self, **options):
-        super(JspLexer, self).__init__(XmlLexer, JspRootLexer, **options)
+        super().__init__(XmlLexer, JspRootLexer, **options)
 
     def analyse_text(text):
         rv = JavaLexer.analyse_text(text) - 0.01
@@ -1428,7 +1404,7 @@ class EvoqueLexer(RegexLexer):
             # see doc for handling first name arg: /directives/evoque/
             # + minor inconsistency: the "name" in e.g. $overlay{name=site_base}
             # should be using(PythonLexer), not passed out as String
-            (r'(\$)(evoque|overlay)(\{(%)?)(\s*[#\w\-"\'.]+[^=,%}]+?)?'
+            (r'(\$)(evoque|overlay)(\{(%)?)(\s*[#\w\-"\'.]+)?'
              r'(.*?)((?(4)%)\})',
              bygroups(Punctuation, Name.Builtin, Punctuation, None,
                       String, using(PythonLexer), Punctuation)),
@@ -1452,6 +1428,10 @@ class EvoqueLexer(RegexLexer):
         ],
     }
 
+    def analyse_text(text):
+        """Evoque templates use $evoque, which is unique."""
+        if '$evoque' in text:
+            return 1
 
 class EvoqueHtmlLexer(DelegatingLexer):
     """
@@ -1466,8 +1446,10 @@ class EvoqueHtmlLexer(DelegatingLexer):
     mimetypes = ['text/html+evoque']
 
     def __init__(self, **options):
-        super(EvoqueHtmlLexer, self).__init__(HtmlLexer, EvoqueLexer,
-                                              **options)
+        super().__init__(HtmlLexer, EvoqueLexer, **options)
+
+    def analyse_text(text):
+        return EvoqueLexer.analyse_text(text)
 
 
 class EvoqueXmlLexer(DelegatingLexer):
@@ -1483,8 +1465,10 @@ class EvoqueXmlLexer(DelegatingLexer):
     mimetypes = ['application/xml+evoque']
 
     def __init__(self, **options):
-        super(EvoqueXmlLexer, self).__init__(XmlLexer, EvoqueLexer,
-                                             **options)
+        super().__init__(XmlLexer, EvoqueLexer, **options)
+
+    def analyse_text(text):
+        return EvoqueLexer.analyse_text(text)
 
 
 class ColdfusionLexer(RegexLexer):
@@ -1591,8 +1575,7 @@ class ColdfusionHtmlLexer(DelegatingLexer):
     mimetypes = ['application/x-coldfusion']
 
     def __init__(self, **options):
-        super(ColdfusionHtmlLexer, self).__init__(HtmlLexer, ColdfusionMarkupLexer,
-                                                  **options)
+        super().__init__(HtmlLexer, ColdfusionMarkupLexer, **options)
 
 
 class ColdfusionCFCLexer(DelegatingLexer):
@@ -1607,8 +1590,7 @@ class ColdfusionCFCLexer(DelegatingLexer):
     mimetypes = []
 
     def __init__(self, **options):
-        super(ColdfusionCFCLexer, self).__init__(ColdfusionHtmlLexer, ColdfusionLexer,
-                                                 **options)
+        super().__init__(ColdfusionHtmlLexer, ColdfusionLexer, **options)
 
 
 class SspLexer(DelegatingLexer):
@@ -1623,11 +1605,11 @@ class SspLexer(DelegatingLexer):
     mimetypes = ['application/x-ssp']
 
     def __init__(self, **options):
-        super(SspLexer, self).__init__(XmlLexer, JspRootLexer, **options)
+        super().__init__(XmlLexer, JspRootLexer, **options)
 
     def analyse_text(text):
         rv = 0.0
-        if re.search('val \w+\s*:', text):
+        if re.search(r'val \w+\s*:', text):
             rv += 0.6
         if looks_like_xml(text):
             rv += 0.2
@@ -1670,8 +1652,7 @@ class TeaTemplateLexer(DelegatingLexer):
     mimetypes = ['text/x-tea']
 
     def __init__(self, **options):
-        super(TeaTemplateLexer, self).__init__(XmlLexer,
-                                               TeaTemplateRootLexer, **options)
+        super().__init__(XmlLexer, TeaTemplateRootLexer, **options)
 
     def analyse_text(text):
         rv = TeaLangLexer.analyse_text(text) - 0.01
@@ -1701,7 +1682,7 @@ class LassoHtmlLexer(DelegatingLexer):
                  'application/x-httpd-lasso[89]']
 
     def __init__(self, **options):
-        super(LassoHtmlLexer, self).__init__(HtmlLexer, LassoLexer, **options)
+        super().__init__(HtmlLexer, LassoLexer, **options)
 
     def analyse_text(text):
         rv = LassoLexer.analyse_text(text) - 0.01
@@ -1725,7 +1706,7 @@ class LassoXmlLexer(DelegatingLexer):
     mimetypes = ['application/xml+lasso']
 
     def __init__(self, **options):
-        super(LassoXmlLexer, self).__init__(XmlLexer, LassoLexer, **options)
+        super().__init__(XmlLexer, LassoLexer, **options)
 
     def analyse_text(text):
         rv = LassoLexer.analyse_text(text) - 0.01
@@ -1749,11 +1730,11 @@ class LassoCssLexer(DelegatingLexer):
 
     def __init__(self, **options):
         options['requiredelimiters'] = True
-        super(LassoCssLexer, self).__init__(CssLexer, LassoLexer, **options)
+        super().__init__(CssLexer, LassoLexer, **options)
 
     def analyse_text(text):
         rv = LassoLexer.analyse_text(text) - 0.05
-        if re.search(r'\w+:.+?;', text):
+        if re.search(r'\w+:[^;]+;', text):
             rv += 0.1
         if 'padding:' in text:
             rv += 0.1
@@ -1769,7 +1750,7 @@ class LassoJavascriptLexer(DelegatingLexer):
     """
 
     name = 'JavaScript+Lasso'
-    aliases = ['js+lasso', 'javascript+lasso']
+    aliases = ['javascript+lasso', 'js+lasso']
     alias_filenames = ['*.js']
     mimetypes = ['application/x-javascript+lasso',
                  'text/x-javascript+lasso',
@@ -1777,8 +1758,7 @@ class LassoJavascriptLexer(DelegatingLexer):
 
     def __init__(self, **options):
         options['requiredelimiters'] = True
-        super(LassoJavascriptLexer, self).__init__(JavascriptLexer, LassoLexer,
-                                                   **options)
+        super().__init__(JavascriptLexer, LassoLexer, **options)
 
     def analyse_text(text):
         rv = LassoLexer.analyse_text(text) - 0.05
@@ -1802,27 +1782,27 @@ class HandlebarsLexer(RegexLexer):
         'root': [
             (r'[^{]+', Other),
 
+            # Comment start {{!  }} or {{!--
             (r'\{\{!.*\}\}', Comment),
 
+            # HTML Escaping open {{{expression
             (r'(\{\{\{)(\s*)', bygroups(Comment.Special, Text), 'tag'),
+
+            # {{blockOpen {{#blockOpen {{/blockClose with optional tilde ~
+            (r'(\{\{)([#~/]+)([^\s}]*)',
+             bygroups(Comment.Preproc, Number.Attribute, Number.Attribute), 'tag'),
             (r'(\{\{)(\s*)', bygroups(Comment.Preproc, Text), 'tag'),
         ],
 
         'tag': [
             (r'\s+', Text),
+            # HTML Escaping close }}}
             (r'\}\}\}', Comment.Special, '#pop'),
-            (r'\}\}', Comment.Preproc, '#pop'),
-
-            # Handlebars
-            (r'([#/]*)(each|if|unless|else|with|log|in(line)?)', bygroups(Keyword,
-             Keyword)),
-            (r'#\*inline', Keyword),
-
-            # General {{#block}}
-            (r'([#/])([\w-]+)', bygroups(Name.Function, Name.Function)),
+            # blockClose}}, includes optional tilde ~
+            (r'(~?)(\}\})', bygroups(Number, Comment.Preproc), '#pop'),
 
             # {{opt=something}}
-            (r'([\w-]+)(=)', bygroups(Name.Attribute, Operator)),
+            (r'([^\s}]+)(=)', bygroups(Name.Attribute, Operator)),
 
             # Partials {{> ...}}
             (r'(>)(\s*)(@partial-block)', bygroups(Keyword, Text, Keyword)),
@@ -1845,7 +1825,7 @@ class HandlebarsLexer(RegexLexer):
             include('generic'),
         ],
         'variable': [
-            (r'[a-zA-Z][\w-]*', Name.Variable),
+            (r'[()/@a-zA-Z][\w-]*', Name.Variable),
             (r'\.[\w-]+', Name.Variable),
             (r'(this\/|\.\/|(\.\.\/)+)[\w-]+', Name.Variable),
         ],
@@ -1853,8 +1833,8 @@ class HandlebarsLexer(RegexLexer):
             include('variable'),
 
             # borrowed from DjangoLexer
-            (r':?"(\\\\|\\"|[^"])*"', String.Double),
-            (r":?'(\\\\|\\'|[^'])*'", String.Single),
+            (r':?"(\\\\|\\[^\\]|[^"\\])*"', String.Double),
+            (r":?'(\\\\|\\[^\\]|[^'\\])*'", String.Single),
             (r"[0-9](\.[0-9]*)?(eE[+-][0-9])?[flFLdD]?|"
              r"0[xX][0-9a-fA-F]+[Ll]?", Number),
         ]
@@ -1875,7 +1855,7 @@ class HandlebarsHtmlLexer(DelegatingLexer):
     mimetypes = ['text/html+handlebars', 'text/x-handlebars-template']
 
     def __init__(self, **options):
-        super(HandlebarsHtmlLexer, self).__init__(HtmlLexer, HandlebarsLexer, **options)
+        super().__init__(HtmlLexer, HandlebarsLexer, **options)
 
 
 class YamlJinjaLexer(DelegatingLexer):
@@ -1894,7 +1874,7 @@ class YamlJinjaLexer(DelegatingLexer):
     mimetypes = ['text/x-yaml+jinja', 'text/x-sls']
 
     def __init__(self, **options):
-        super(YamlJinjaLexer, self).__init__(YamlLexer, DjangoLexer, **options)
+        super().__init__(YamlLexer, DjangoLexer, **options)
 
 
 class LiquidLexer(RegexLexer):
@@ -1955,7 +1935,7 @@ class LiquidLexer(RegexLexer):
 
         'output': [
             include('whitespace'),
-            ('\}\}', Punctuation, '#pop'),  # end of output
+            (r'\}\}', Punctuation, '#pop'),  # end of output
 
             (r'\|', Punctuation, 'filters')
         ],
@@ -2166,8 +2146,8 @@ class TwigLexer(RegexLexer):
             (_ident_inner, Name.Variable),
             (r'\.' + _ident_inner, Name.Variable),
             (r'\.[0-9]+', Number),
-            (r':?"(\\\\|\\"|[^"])*"', String.Double),
-            (r":?'(\\\\|\\'|[^'])*'", String.Single),
+            (r':?"(\\\\|\\[^\\]|[^"\\])*"', String.Double),
+            (r":?'(\\\\|\\[^\\]|[^'\\])*'", String.Single),
             (r'([{}()\[\]+\-*/,:~%]|\.\.|\?|:|\*\*|\/\/|!=|[><=]=?)', Operator),
             (r"[0-9](\.[0-9]*)?(eE[+-][0-9])?[flFLdD]?|"
              r"0[xX][0-9a-fA-F]+[Ll]?", Number),
@@ -2200,7 +2180,7 @@ class TwigHtmlLexer(DelegatingLexer):
     mimetypes = ['text/html+twig']
 
     def __init__(self, **options):
-        super(TwigHtmlLexer, self).__init__(HtmlLexer, TwigLexer, **options)
+        super().__init__(HtmlLexer, TwigLexer, **options)
 
 
 class Angular2Lexer(RegexLexer):
@@ -2235,9 +2215,9 @@ class Angular2Lexer(RegexLexer):
 
             # *ngIf="..."; #f="ngForm"
             (r'([*#])([\w:.-]+)(\s*)(=)(\s*)',
-             bygroups(Punctuation, Name.Attribute, Punctuation, Operator), 'attr'),
+             bygroups(Punctuation, Name.Attribute, Text, Operator, Text), 'attr'),
             (r'([*#])([\w:.-]+)(\s*)',
-             bygroups(Punctuation, Name.Attribute, Punctuation)),
+             bygroups(Punctuation, Name.Attribute, Text)),
         ],
 
         'ngExpression': [
@@ -2246,8 +2226,8 @@ class Angular2Lexer(RegexLexer):
 
             # Literals
             (r':?(true|false)', String.Boolean),
-            (r':?"(\\\\|\\"|[^"])*"', String.Double),
-            (r":?'(\\\\|\\'|[^'])*'", String.Single),
+            (r':?"(\\\\|\\[^\\]|[^"\\])*"', String.Double),
+            (r":?'(\\\\|\\[^\\]|[^'\\])*'", String.Single),
             (r"[0-9](\.[0-9]*)?(eE[+-][0-9])?[flFLdD]?|"
              r"0[xX][0-9a-fA-F]+[Ll]?", Number),
 
@@ -2280,4 +2260,4 @@ class Angular2HtmlLexer(DelegatingLexer):
     filenames = ['*.ng2']
 
     def __init__(self, **options):
-        super(Angular2HtmlLexer, self).__init__(HtmlLexer, Angular2Lexer, **options)
+        super().__init__(HtmlLexer, Angular2Lexer, **options)

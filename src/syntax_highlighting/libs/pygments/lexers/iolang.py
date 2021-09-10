@@ -1,11 +1,10 @@
-# -*- coding: utf-8 -*-
 """
     pygments.lexers.iolang
     ~~~~~~~~~~~~~~~~~~~~~~
 
     Lexers for the Io language.
 
-    :copyright: Copyright 2006-2017 by the Pygments team, see AUTHORS.
+    :copyright: Copyright 2006-2021 by the Pygments team, see AUTHORS.
     :license: BSD, see LICENSE for details.
 """
 
@@ -37,7 +36,7 @@ class IoLexer(RegexLexer):
             (r'/(\\\n)?[*](.|\n)*?[*](\\\n)?/', Comment.Multiline),
             (r'/\+', Comment.Multiline, 'nestedcomment'),
             # DoubleQuotedString
-            (r'"(\\\\|\\"|[^"])*"', String),
+            (r'"(\\\\|\\[^\\]|[^"\\])*"', String),
             # Operators
             (r'::=|:=|=|\(|\)|;|,|\*|-|\+|>|<|@|!|/|\||\^|\.|%|&|\[|\]|\{|\}',
              Operator),
@@ -49,7 +48,7 @@ class IoLexer(RegexLexer):
             # names
             (r'(Object|list|List|Map|args|Sequence|Coroutine|File)\b',
              Name.Builtin),
-            ('[a-zA-Z_]\w*', Name),
+            (r'[a-zA-Z_]\w*', Name),
             # numbers
             (r'(\d+\.?\d*|\d*\.\d+)([eE][+-]?[0-9]+)?', Number.Float),
             (r'\d+', Number.Integer)

@@ -1,11 +1,10 @@
-# -*- coding: utf-8 -*-
 """
     pygments.lexers.bibtex
     ~~~~~~~~~~~~~~~~~~~~~~
 
     Lexers for BibTeX bibliography data and styles
 
-    :copyright: Copyright 2006-2017 by the Pygments team, see AUTHORS.
+    :copyright: Copyright 2006-2021 by the Pygments team, see AUTHORS.
     :license: BSD, see LICENSE for details.
 """
 
@@ -27,13 +26,13 @@ class BibTeXLexer(ExtendedRegexLexer):
     """
 
     name = 'BibTeX'
-    aliases = ['bib', 'bibtex']
+    aliases = ['bibtex', 'bib']
     filenames = ['*.bib']
     mimetypes = ["text/x-bibtex"]
     flags = re.IGNORECASE
 
     ALLOWED_CHARS = r'@!$&*+\-./:;<>?\[\\\]^`|~'
-    IDENTIFIER = '[{0}][{1}]*'.format('a-z_' + ALLOWED_CHARS, r'\w' + ALLOWED_CHARS)
+    IDENTIFIER = '[{}][{}]*'.format('a-z_' + ALLOWED_CHARS, r'\w' + ALLOWED_CHARS)
 
     def open_brace_callback(self, match, ctx):
         opening_brace = match.group()
@@ -101,12 +100,12 @@ class BibTeXLexer(ExtendedRegexLexer):
         'quoted-string': [
             (r'\{', String, 'braced-string'),
             ('"', String, '#pop'),
-            ('[^\{\"]+', String),
+            (r'[^\{\"]+', String),
         ],
         'braced-string': [
             (r'\{', String, '#push'),
             (r'\}', String, '#pop'),
-            ('[^\{\}]+', String),
+            (r'[^\{\}]+', String),
         ],
         'whitespace': [
             (r'\s+', Text),
@@ -154,7 +153,7 @@ class BSTLexer(RegexLexer):
             default('#pop'),
         ],
         'whitespace': [
-            ('\s+', Text),
-            ('%.*?$', Comment.SingleLine),
+            (r'\s+', Text),
+            ('%.*?$', Comment.Single),
         ],
     }

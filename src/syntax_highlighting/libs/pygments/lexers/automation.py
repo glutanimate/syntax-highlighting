@@ -1,11 +1,10 @@
-# -*- coding: utf-8 -*-
 """
     pygments.lexers.automation
     ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     Lexers for automation scripting languages.
 
-    :copyright: Copyright 2006-2017 by the Pygments team, see AUTHORS.
+    :copyright: Copyright 2006-2021 by the Pygments team, see AUTHORS.
     :license: BSD, see LICENSE for details.
 """
 
@@ -23,7 +22,7 @@ class AutohotkeyLexer(RegexLexer):
     .. versionadded:: 1.4
     """
     name = 'autohotkey'
-    aliases = ['ahk', 'autohotkey']
+    aliases = ['autohotkey', 'ahk']
     filenames = ['*.ahk', '*.ahkl']
     mimetypes = ['text/x-autohotkey']
 
@@ -31,8 +30,8 @@ class AutohotkeyLexer(RegexLexer):
         'root': [
             (r'^(\s*)(/\*)', bygroups(Text, Comment.Multiline), 'incomment'),
             (r'^(\s*)(\()', bygroups(Text, Generic), 'incontinuation'),
-            (r'\s+;.*?$', Comment.Singleline),
-            (r'^;.*?$', Comment.Singleline),
+            (r'\s+;.*?$', Comment.Single),
+            (r'^;.*?$', Comment.Single),
             (r'[]{}(),;[]', Punctuation),
             (r'(in|is|and|or|not)\b', Operator.Word),
             (r'\%[a-zA-Z_#@$][\w#@$]*\%', Name.Variable),
@@ -327,6 +326,7 @@ class AutoItLexer(RegexLexer):
             include('builtInFunctions'),
             include('builtInMarcros'),
             (r'"', String, combined('stringescape', 'dqs')),
+            (r"'", String, 'sqs'),
             include('numbers'),
             (r'[a-zA-Z_#@$][\w#@$]*', Name),
             (r'\\|\'', Text),
@@ -367,6 +367,11 @@ class AutoItLexer(RegexLexer):
         'dqs': [
             (r'"', String, '#pop'),
             include('strings')
+        ],
+        'sqs': [
+            (r'\'\'|\`([,%`abfnrtv])', String.Escape),
+            (r"'", String, '#pop'),
+            (r"[^'\n]+", String)
         ],
         'garbage': [
             (r'[^\S\n]', Text),
