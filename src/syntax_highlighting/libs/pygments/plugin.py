@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
     pygments.plugin
     ~~~~~~~~~~~~~~~
@@ -32,7 +31,7 @@
         yourfilter = yourfilter:YourFilter
 
 
-    :copyright: Copyright 2006-2017 by the Pygments team, see AUTHORS.
+    :copyright: Copyright 2006-2021 by the Pygments team, see AUTHORS.
     :license: BSD, see LICENSE for details.
 """
 LEXER_ENTRY_POINT = 'pygments.lexers'
@@ -40,13 +39,15 @@ FORMATTER_ENTRY_POINT = 'pygments.formatters'
 STYLE_ENTRY_POINT = 'pygments.styles'
 FILTER_ENTRY_POINT = 'pygments.filters'
 
+
 def iter_entry_points(group_name):
     try:
         import pkg_resources
-    except ImportError:
+    except (ImportError, OSError):
         return []
 
     return pkg_resources.iter_entry_points(group_name)
+
 
 def find_plugin_lexers():
     for entrypoint in iter_entry_points(LEXER_ENTRY_POINT):

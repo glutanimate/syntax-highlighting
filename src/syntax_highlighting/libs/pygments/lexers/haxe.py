@@ -1,11 +1,10 @@
-# -*- coding: utf-8 -*-
 """
     pygments.lexers.haxe
     ~~~~~~~~~~~~~~~~~~~~
 
     Lexers for Haxe and related stuff.
 
-    :copyright: Copyright 2006-2017 by the Pygments team, see AUTHORS.
+    :copyright: Copyright 2006-2021 by the Pygments team, see AUTHORS.
     :license: BSD, see LICENSE for details.
 """
 
@@ -27,7 +26,7 @@ class HaxeLexer(ExtendedRegexLexer):
     """
 
     name = 'Haxe'
-    aliases = ['hx', 'haxe', 'hxsl']
+    aliases = ['haxe', 'hxsl', 'hx']
     filenames = ['*.hx', '*.hxsl']
     mimetypes = ['text/haxe', 'text/x-haxe', 'text/x-hx']
 
@@ -43,7 +42,7 @@ class HaxeLexer(ExtendedRegexLexer):
     typeid = r'_*[A-Z]\w*'
 
     # combined ident and dollar and idtype
-    ident = r'(?:_*[a-z]\w*|_+[0-9]\w*|' + typeid + '|_+|\$\w+)'
+    ident = r'(?:_*[a-z]\w*|_+[0-9]\w*|' + typeid + r'|_+|\$\w+)'
 
     binop = (r'(?:%=|&=|\|=|\^=|\+=|\-=|\*=|/=|<<=|>\s*>\s*=|>\s*>\s*>\s*=|==|'
              r'!=|<=|>\s*=|&&|\|\||<<|>>>|>\s*>|\.\.\.|<|>|%|&|\||\^|\+|\*|'
@@ -182,7 +181,7 @@ class HaxeLexer(ExtendedRegexLexer):
             (r'[0-9]+[eE][+\-]?[0-9]+', Number.Float),
             (r'[0-9]+\.[0-9]*[eE][+\-]?[0-9]+', Number.Float),
             (r'[0-9]+\.[0-9]+', Number.Float),
-            (r'[0-9]+\.(?!' + ident + '|\.\.)', Number.Float),
+            (r'[0-9]+\.(?!' + ident + r'|\.\.)', Number.Float),
 
             # Int
             (r'0x[0-9a-fA-F]+', Number.Hex),
@@ -219,7 +218,7 @@ class HaxeLexer(ExtendedRegexLexer):
             (r'[0-9]+[eE][+\-]?[0-9]+', Number.Float, ('#pop', 'preproc-expr-chain')),
             (r'[0-9]+\.[0-9]*[eE][+\-]?[0-9]+', Number.Float, ('#pop', 'preproc-expr-chain')),
             (r'[0-9]+\.[0-9]+', Number.Float, ('#pop', 'preproc-expr-chain')),
-            (r'[0-9]+\.(?!' + ident + '|\.\.)', Number.Float, ('#pop', 'preproc-expr-chain')),
+            (r'[0-9]+\.(?!' + ident + r'|\.\.)', Number.Float, ('#pop', 'preproc-expr-chain')),
 
             # Int
             (r'0x[0-9a-fA-F]+', Number.Hex, ('#pop', 'preproc-expr-chain')),
@@ -456,7 +455,7 @@ class HaxeLexer(ExtendedRegexLexer):
             (r'[0-9]+[eE][+\-]?[0-9]+', Number.Float, ('#pop', 'expr-chain')),
             (r'[0-9]+\.[0-9]*[eE][+\-]?[0-9]+', Number.Float, ('#pop', 'expr-chain')),
             (r'[0-9]+\.[0-9]+', Number.Float, ('#pop', 'expr-chain')),
-            (r'[0-9]+\.(?!' + ident + '|\.\.)', Number.Float, ('#pop', 'expr-chain')),
+            (r'[0-9]+\.(?!' + ident + r'|\.\.)', Number.Float, ('#pop', 'expr-chain')),
 
             # Int
             (r'0x[0-9a-fA-F]+', Number.Hex, ('#pop', 'expr-chain')),
@@ -467,7 +466,7 @@ class HaxeLexer(ExtendedRegexLexer):
             (r'"', String.Double, ('#pop', 'expr-chain', 'string-double')),
 
             # EReg
-            (r'~/(\\\\|\\/|[^/\n])*/[gimsu]*', String.Regex, ('#pop', 'expr-chain')),
+            (r'~/(\\\\|\\[^\\]|[^/\\\n])*/[gimsu]*', String.Regex, ('#pop', 'expr-chain')),
 
             # Array
             (r'\[', Punctuation, ('#pop', 'expr-chain', 'array-decl')),
@@ -711,7 +710,7 @@ class HaxeLexer(ExtendedRegexLexer):
             (r'[0-9]+[eE][+\-]?[0-9]+', Number.Float, '#pop'),
             (r'[0-9]+\.[0-9]*[eE][+\-]?[0-9]+', Number.Float, '#pop'),
             (r'[0-9]+\.[0-9]+', Number.Float, '#pop'),
-            (r'[0-9]+\.(?!' + ident + '|\.\.)', Number.Float, '#pop'),
+            (r'[0-9]+\.(?!' + ident + r'|\.\.)', Number.Float, '#pop'),
 
             # Int
             (r'0x[0-9a-fA-F]+', Number.Hex, '#pop'),
@@ -722,7 +721,7 @@ class HaxeLexer(ExtendedRegexLexer):
             (r'"', String.Double, ('#pop', 'string-double')),
 
             # EReg
-            (r'~/(\\\\|\\/|[^/\n])*/[gim]*', String.Regex, '#pop'),
+            (r'~/(\\\\|\\[^\\]|[^/\\\n])*/[gim]*', String.Regex, '#pop'),
 
             # Array
             (r'\[', Operator, ('#pop', 'array-decl')),

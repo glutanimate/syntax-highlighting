@@ -53,7 +53,9 @@ LIMITED_LANGS = local_conf["limitToLangs"]
 #                        to show the user AND
 #  The "language aliases": short, cryptic names for internal
 #                          use by HtmlFormatter
-LANGUAGES_MAP = {lex[0]: lex[1][0] for lex in get_all_lexers()}
+# filter out langauges without aliases
+LEXERS = [item for item in get_all_lexers() if item[1]]
+LANGUAGES_MAP = {lex[0]: lex[1][0] for lex in LEXERS}
 
 
 ERR_LEXER = ("<b>Error</b>: Selected language not found.<br>"

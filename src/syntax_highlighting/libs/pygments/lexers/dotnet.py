@@ -1,11 +1,10 @@
-# -*- coding: utf-8 -*-
 """
     pygments.lexers.dotnet
     ~~~~~~~~~~~~~~~~~~~~~~
 
     Lexers for .net languages.
 
-    :copyright: Copyright 2006-2017 by the Pygments team, see AUTHORS.
+    :copyright: Copyright 2006-2021 by the Pygments team, see AUTHORS.
     :license: BSD, see LICENSE for details.
 """
 import re
@@ -14,7 +13,7 @@ from pygments.lexer import RegexLexer, DelegatingLexer, bygroups, include, \
     using, this, default, words
 from pygments.token import Punctuation, \
     Text, Comment, Operator, Keyword, Name, String, Number, Literal, Other
-from pygments.util import get_choice_opt, iteritems
+from pygments.util import get_choice_opt
 from pygments import unistring as uni
 
 from pygments.lexers.html import XmlLexer
@@ -58,7 +57,7 @@ class CSharpLexer(RegexLexer):
     # http://www.ecma-international.org/publications/files/ECMA-ST/Ecma-334.pdf
 
     levels = {
-        'none': '@?[_a-zA-Z]\w*',
+        'none': r'@?[_a-zA-Z]\w*',
         'basic': ('@?[_' + uni.combine('Lu', 'Ll', 'Lt', 'Lm', 'Nl') + ']' +
                   '[' + uni.combine('Lu', 'Ll', 'Lt', 'Lm', 'Nl', 'Nd', 'Pc',
                                     'Cf', 'Mn', 'Mc') + ']*'),
@@ -71,7 +70,7 @@ class CSharpLexer(RegexLexer):
     tokens = {}
     token_variants = True
 
-    for levelname, cs_ident in iteritems(levels):
+    for levelname, cs_ident in levels.items():
         tokens[levelname] = {
             'root': [
                 # method names
@@ -88,7 +87,7 @@ class CSharpLexer(RegexLexer):
                 (r'[~!%^&*()+=|\[\]:;,.<>/?-]', Punctuation),
                 (r'[{}]', Punctuation),
                 (r'@"(""|[^"])*"', String),
-                (r'"(\\\\|\\"|[^"\n])*["\n]', String),
+                (r'\$?"(\\\\|\\[^\\]|[^"\\\n])*["\n]', String),
                 (r"'\\.'|'[^\\]'", String.Char),
                 (r"[0-9](\.[0-9]*)?([eE][+-][0-9]+)?"
                  r"[flFLdD]?|0[xX][0-9a-fA-F]+[Ll]?", Number),
@@ -171,7 +170,7 @@ class NemerleLexer(RegexLexer):
     # http://www.ecma-international.org/publications/files/ECMA-ST/Ecma-334.pdf
 
     levels = {
-        'none': '@?[_a-zA-Z]\w*',
+        'none': r'@?[_a-zA-Z]\w*',
         'basic': ('@?[_' + uni.combine('Lu', 'Ll', 'Lt', 'Lm', 'Nl') + ']' +
                   '[' + uni.combine('Lu', 'Ll', 'Lt', 'Lm', 'Nl', 'Nd', 'Pc',
                                     'Cf', 'Mn', 'Mc') + ']*'),
@@ -184,7 +183,7 @@ class NemerleLexer(RegexLexer):
     tokens = {}
     token_variants = True
 
-    for levelname, cs_ident in iteritems(levels):
+    for levelname, cs_ident in levels.items():
         tokens[levelname] = {
             'root': [
                 # method names
@@ -213,7 +212,7 @@ class NemerleLexer(RegexLexer):
                 (r'[~!%^&*()+=|\[\]:;,.<>/?-]', Punctuation),
                 (r'[{}]', Punctuation),
                 (r'@"(""|[^"])*"', String),
-                (r'"(\\\\|\\"|[^"\n])*["\n]', String),
+                (r'"(\\\\|\\[^\\]|[^"\\\n])*["\n]', String),
                 (r"'\\.'|'[^\\]'", String.Char),
                 (r"0[xX][0-9a-fA-F]+[Ll]?", Number),
                 (r"[0-9](\.[0-9]*)?([eE][+-][0-9]+)?[flFLdD]?", Number),
@@ -295,6 +294,16 @@ class NemerleLexer(RegexLexer):
 
         RegexLexer.__init__(self, **options)
 
+    def analyse_text(text):
+        """Nemerle is quite similar to Python, but @if is relatively uncommon
+        elsewhere."""
+        result = 0
+
+        if '@if' in text:
+            result += 0.1
+
+        return result
+
 
 class BooLexer(RegexLexer):
     """
@@ -315,8 +324,8 @@ class BooLexer(RegexLexer):
             (r'\\\n', Text),
             (r'\\', Text),
             (r'(in|is|and|or|not)\b', Operator.Word),
-            (r'/(\\\\|\\/|[^/\s])/', String.Regex),
-            (r'@/(\\\\|\\/|[^/])*/', String.Regex),
+            (r'/(\\\\|\\[^\\]|[^/\\\s])/', String.Regex),
+            (r'@/(\\\\|\\[^\\]|[^/\\])*/', String.Regex),
             (r'=~|!=|==|<<|>>|[-+/*%=<>&^|]', Operator),
             (r'(as|abstract|callable|constructor|destructor|do|import|'
              r'enum|event|final|get|interface|internal|of|override|'
@@ -335,8 +344,8 @@ class BooLexer(RegexLexer):
              r'rawArrayIndexing|required|typeof|unchecked|using|'
              r'yieldAll|zip)\b', Name.Builtin),
             (r'"""(\\\\|\\"|.*?)"""', String.Double),
-            (r'"(\\\\|\\"|[^"]*?)"', String.Double),
-            (r"'(\\\\|\\'|[^']*?)'", String.Single),
+            (r'"(\\\\|\\[^\\]|[^"\\])*"', String.Double),
+            (r"'(\\\\|\\[^\\]|[^'\\])*'", String.Single),
             (r'[a-zA-Z_]\w*', Name),
             (r'(\d+\.\d*|\d*\.\d+)([fF][+-]?[0-9]+)?', Number.Float),
             (r'[0-9][0-9.]*(ms?|d|h|s)', Number),
@@ -352,13 +361,13 @@ class BooLexer(RegexLexer):
             ('[*/]', Comment.Multiline)
         ],
         'funcname': [
-            ('[a-zA-Z_]\w*', Name.Function, '#pop')
+            (r'[a-zA-Z_]\w*', Name.Function, '#pop')
         ],
         'classname': [
-            ('[a-zA-Z_]\w*', Name.Class, '#pop')
+            (r'[a-zA-Z_]\w*', Name.Class, '#pop')
         ],
         'namespace': [
-            ('[a-zA-Z_][\w.]*', Name.Namespace, '#pop')
+            (r'[a-zA-Z_][\w.]*', Name.Namespace, '#pop')
         ]
     }
 
@@ -413,7 +422,7 @@ class VbNetLexer(RegexLexer):
                 'Static', 'Step', 'Stop', 'SyncLock', 'Then', 'Throw', 'To',
                 'True', 'Try', 'TryCast', 'Wend', 'Using', 'When', 'While',
                 'Widening', 'With', 'WithEvents', 'WriteOnly'),
-                   prefix='(?<!\.)', suffix=r'\b'), Keyword),
+                   prefix=r'(?<!\.)', suffix=r'\b'), Keyword),
             (r'(?<!\.)End\b', Keyword, 'end'),
             (r'(?<!\.)(Dim|Const)\b', Keyword, 'dim'),
             (r'(?<!\.)(Function|Sub|Property)(\s+)',
@@ -507,8 +516,7 @@ class CSharpAspxLexer(DelegatingLexer):
     mimetypes = []
 
     def __init__(self, **options):
-        super(CSharpAspxLexer, self).__init__(CSharpLexer, GenericAspxLexer,
-                                              **options)
+        super().__init__(CSharpLexer, GenericAspxLexer, **options)
 
     def analyse_text(text):
         if re.search(r'Page\s*Language="C#"', text, re.I) is not None:
@@ -528,8 +536,7 @@ class VbNetAspxLexer(DelegatingLexer):
     mimetypes = []
 
     def __init__(self, **options):
-        super(VbNetAspxLexer, self).__init__(VbNetLexer, GenericAspxLexer,
-                                             **options)
+        super().__init__(VbNetLexer, GenericAspxLexer, **options)
 
     def analyse_text(text):
         if re.search(r'Page\s*Language="Vb"', text, re.I) is not None:
@@ -541,16 +548,13 @@ class VbNetAspxLexer(DelegatingLexer):
 # Very close to functional.OcamlLexer
 class FSharpLexer(RegexLexer):
     """
-    For the F# language (version 3.0).
-
-    AAAAACK Strings
-    http://research.microsoft.com/en-us/um/cambridge/projects/fsharp/manual/spec.html#_Toc335818775
+    For the `F# language <https://fsharp.org/>`_ (version 3.0).
 
     .. versionadded:: 1.5
     """
 
-    name = 'FSharp'
-    aliases = ['fsharp']
+    name = 'F#'
+    aliases = ['fsharp', 'f#']
     filenames = ['*.fs', '*.fsi']
     mimetypes = ['text/x-fsharp']
 
@@ -574,10 +578,10 @@ class FSharpLexer(RegexLexer):
         'virtual', 'volatile',
     ]
     keyopts = [
-        '!=', '#', '&&', '&', '\(', '\)', '\*', '\+', ',', '-\.',
-        '->', '-', '\.\.', '\.', '::', ':=', ':>', ':', ';;', ';', '<-',
-        '<\]', '<', '>\]', '>', '\?\?', '\?', '\[<', '\[\|', '\[', '\]',
-        '_', '`', '\{', '\|\]', '\|', '\}', '~', '<@@', '<@', '=', '@>', '@@>',
+        '!=', '#', '&&', '&', r'\(', r'\)', r'\*', r'\+', ',', r'-\.',
+        '->', '-', r'\.\.', r'\.', '::', ':=', ':>', ':', ';;', ';', '<-',
+        r'<\]', '<', r'>\]', '>', r'\?\?', r'\?', r'\[<', r'\[\|', r'\[', r'\]',
+        '_', '`', r'\{', r'\|\]', r'\|', r'\}', '~', '<@@', '<@', '=', '@>', '@@>',
     ]
 
     operators = r'[!$%&*+\./:<=>?@^|~-]'
@@ -689,3 +693,14 @@ class FSharpLexer(RegexLexer):
             (r'"', String),
         ],
     }
+
+    def analyse_text(text):
+        """F# doesn't have that many unique features -- |> and <| are weak
+        indicators."""
+        result = 0
+        if '|>' in text:
+            result += 0.05
+        if '<|' in text:
+            result += 0.05
+
+        return result
