@@ -418,15 +418,14 @@ def highlight_code(ed):
     ed.web.eval("document.execCommand('inserthtml', false, %s);"
                 % json.dumps(pretty_code))
 
-
 def process_html(html):
     """Modify highlighter output to address some Anki idiosyncracies"""
     # 1.) "Escape" curly bracket sequences reserved to Anki's card template
-    # system by placing an invisible html tag inbetween
+
+    # protect the {{c1::}} clone field
+    html = re.sub(r"\{\{c\d+::", r"\{\{c\d+::", html)
+    html = re.sub(r"}}", "}}", html)
     
-# Preventing conflicts with clone templates
-    html = re.sub(r"(\{\{)(?![c\d+:])", r"{<!---->{", html)
-    html = re.sub(r"(?<![:c]\d+)(\}\})", r"}<!---->}", html)
     return html
 
 # Hooks and monkey-patches
