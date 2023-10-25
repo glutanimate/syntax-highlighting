@@ -17,12 +17,9 @@ from __future__ import unicode_literals
 import os
 import sys
 import re
-import json
 
 from .consts import *  # import addon_path
 # always use shipped pygments library
-# FIXME: properly vendorize pygments, lest we interfere with
-# other add-ons that might be shipping their own pygments
 sys.path.insert(0, os.path.join(addon_path, "libs"))
 
 from pygments import highlight
@@ -34,6 +31,7 @@ from aqt.qt import *
 from aqt import mw
 from aqt.editor import Editor
 from aqt.utils import showWarning
+from anki.utils import json
 from anki.hooks import addHook, wrap
 
 from .config import local_conf
@@ -406,12 +404,13 @@ def highlight_code(ed):
     # TODO: understand why this is neccessary
     else:
         if centerfragments:
-            pretty_code = "".join(["<center>",
+            pretty_code = "".join(["<center><table><tbody><tr><td>",
                                    highlight(code, my_lexer, my_formatter),
-                                   "</center><br>"])
+                                   "</td></tr></tbody></table></center><br>"])
         else:
-            pretty_code = "".join([highlight(code, my_lexer, my_formatter),
-                                   "<br>"])
+            pretty_code = "".join(["<table><tbody><tr><td>",
+                                   highlight(code, my_lexer, my_formatter),
+                                   "</td></tr></tbody></table><br>"])
 
     pretty_code = process_html(pretty_code)
 
@@ -419,19 +418,17 @@ def highlight_code(ed):
     ed.web.eval("document.execCommand('inserthtml', false, %s);"
                 % json.dumps(pretty_code))
 
-
 def process_html(html):
     """Modify highlighter output to address some Anki idiosyncracies"""
     # 1.) "Escape" curly bracket sequences reserved to Anki's card template
-    # system by placing an invisible html tag inbetween
-    for pattern, replacement in ((r"{{", r"{<!---->{"),
-                                 (r"}}", r"}<!---->}"),
-                                 (r"::", r":<!---->:")):
-        html = re.sub(pattern, replacement, html)
+
+    # protect the {{c1::}} clone field
+    html = re.sub(r"\{\{c\d+::", r"\{\{c\d+::", html)
+    html = re.sub(r"}}", "}}", html)
+    
     return html
 
 # Hooks and monkey-patches
-
 
 if anki21:
     addHook("setupEditorButtons", onSetupButtons21)

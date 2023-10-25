@@ -55,7 +55,7 @@ def _get_ttype_class(ttype):
 
 
 CSSFILE_TEMPLATE = '''\
-td.linenos { background-color: #f0f0f0; padding-right: 10px; }
+td.linenos { background-color: #; padding-right: 10px; }
 span.lineno { background-color: #f0f0f0; padding: 0 5px 0 5px; }
 pre { line-height: 125%%; }
 %(styledefs)s
@@ -609,7 +609,7 @@ class HtmlFormatter(Formatter):
         if nocls:
             yield 0, ('<table class="%stable">' % self.cssclass +
                       '<tr><td><div class="linenodiv" '
-                      'style="background-color: #f0f0f0; padding-right: 10px">'
+                      'style="background-color: #; padding-right: 10px">'
                       '<pre style="line-height: 125%">' +
                       ls + '</pre></div></td><td class="code">')
         else:
