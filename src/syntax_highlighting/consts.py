@@ -13,7 +13,7 @@ import sys
 import os
 from anki import version
 
-anki21 = version.startswith("2.1.")
+anki21 = version.startswith("2.1.") or version.startswith("23") or version.startswith("24")
 sys_encoding = sys.getfilesystemencoding()
 
 if anki21:
